@@ -11,8 +11,8 @@ import axios from "axios";
 const Register: React.FC = () => {
 
   var loginData = {
-      name:'',
-      username:'',
+      first_name:'',
+      last_name:'',
       email:'',
       mobile:undefined,
       password:'',
@@ -21,11 +21,11 @@ const Register: React.FC = () => {
   const history = useHistory();
 
   const handleInput = (e:any)=>{
-    if(e.target.name==='name'){
-      loginData.name = e.target.value;
+    if(e.target.name==='first_name'){
+      loginData.first_name = e.target.value;
     }
-    if(e.target.name==='username'){
-      loginData.username = e.target.value;
+    if(e.target.name==='last_name'){
+      loginData.last_name = e.target.value;
     }
     if(e.target.name==='email'){
       loginData.email = e.target.value;
@@ -39,7 +39,7 @@ const Register: React.FC = () => {
   }
 
   const handleLogin = ()=>{
-      axios.post(`${vars.ApiUrl}/register`,{loginData},{headers:vars.headers})
+      axios.post(`${vars.ApiUrl}/api/register-user`,{...loginData},{headers:vars.headers})
       .then((res)=>{
         console.log(res.data);
         history.push('/');
@@ -65,11 +65,11 @@ const Register: React.FC = () => {
         <IonContent fullscreen>
           <div id="login-form">
             <h1>Register</h1>
-            <input type="text" onChange={handleInput} name="name" id="name" placeholder="Enter name"></input>
-            <input type="text" onChange={handleInput} name="username" id="username" placeholder="Enter username"></input>
+            <input type="text" onChange={handleInput} name="first_name" id="name" placeholder="Enter name"></input>
+            <input type="text" onChange={handleInput} name="last_name" id="last_name" placeholder="Enter Lastname"></input>
             <input type="text" onChange={handleInput} name="email" id="email" placeholder="Enter Email"></input>
             <input type="number" onChange={handleInput} name="mobile" id="mobile" placeholder="Enter mobile"></input>
-            <input type="text" onChange={handleInput} name="password" id="password" placeholder="Enter password"></input>
+            <input type="password" onChange={handleInput} name="password" id="password" placeholder="Enter password"></input>
             
             <IonButton onClick={handleLogin} color="primary">
               <strong>Sign up</strong>

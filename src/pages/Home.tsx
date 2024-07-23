@@ -40,8 +40,7 @@ const Home: React.FC = () => {
     ws.onerror = ws.onopen = ws.onclose = null;
     ws.close();
   }
-  ws = new WebSocket(`${vars.ApiUrl}/${user?.mobile}`);
-  dispatch(setWebSocket(ws));
+  
 
   const handleLogin = () => {
     console.log("logging in...");
@@ -51,6 +50,8 @@ const Home: React.FC = () => {
         localStorage.setItem("user", JSON.stringify(res.data.user));
         dispatch(storeUserData(res.data.user));
         dispatch(login(res.data.user));
+        ws = new WebSocket(`${vars.WebSocketUrl}/${res.data.user.mobile}`);
+        dispatch(setWebSocket(ws));
         presentAlert({
           header: "Login",
           subHeader: "Hello " + res.data.user.first_name + "!",
@@ -58,6 +59,11 @@ const Home: React.FC = () => {
         });
       })
       .catch((err) => {
+        presentAlert({
+          header: "Error!!",
+          subHeader: "Server error",
+          buttons: ["OK"],
+        });
         console.error(err);
       });
   };
@@ -68,6 +74,8 @@ const Home: React.FC = () => {
     if (userData !== null) {
       dispatch(storeUserData(user));
       dispatch(login(user));
+      ws = new WebSocket(`${vars.WebSocketUrl}/${user.mobile}`);
+      dispatch(setWebSocket(ws));
     }
 
     

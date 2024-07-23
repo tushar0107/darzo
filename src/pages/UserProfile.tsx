@@ -26,11 +26,9 @@ const UserProfile: React.FC = () => {
         <IonContent fullscreen className="ion-padding">
           {loginStatus ?
           <>
-            <h4>id: {user.id}</h4>
-            <h4>name: {user.name}</h4>
-            <h4>email: {user.email}</h4>
-            <h4>username: {user.username}</h4>
-            <h4>mobile: {user.mobile}</h4>
+            <h4>Name: {user.first_name} {user.last_name}</h4>
+            <h4>Email: {user.email}</h4>
+            <h4>Mobile: {user.mobile}</h4>
           </>
           :null}
         </IonContent>

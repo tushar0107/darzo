@@ -6,39 +6,42 @@
     padding: 1rem;
     gap: .5rem;
     grid-template-columns: 90% 10%;
-    background-color: black;
+    background-color: #e7e7e7;
     }
     #chat-actions input{
     display: inline-block;
     width: 100%;
     padding: .6rem 1rem;
     border-radius: 100px;
-    border: 1px solid grey;
+    border: 2px solid grey;
     outline: none;
     }
     #chat-section{
         width: 100%;
-        padding: .5rem;
-        margin-bottom: 9rem;
+        padding: .3rem;
+        margin-bottom: 5rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: end;
+        overflow-y: auto;
+        overflow-anchor: auto;
     }
     #chat-section .message{
-    align-self: end;
+    max-width: 70%;
     width: fit-content;
     padding: 8px;
     margin: 4px 0;
     border-radius: 8px;
     }
     #chat-section .received{
-    max-width: 60%;
-    float: left;
-    clear: both;
+    align-self: start;
     background-color: var(--ion-color-primary);
+    color: white;
     }
     #chat-section .sent{
-    max-width: 60%;
-    float: right;
-    clear: both;
-    background-color: var(--ion-color-primary-tint);
+        align-self: end;
+        background-color: var(--ion-color-primary-tint);
     }
 
 .status{

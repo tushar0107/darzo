@@ -27,6 +27,7 @@ import Register from "./pages/Register";
 import { useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { storeContacts } from "./redux/user/contactSlice";
+import UserProfile from "./pages/UserProfile";
 
 setupIonicReact();
 
@@ -70,6 +71,9 @@ const App: React.FC = () => {
               </Route>
               <Route path="/chat/:mobile">
                 <ChatSocket />
+              </Route>
+              <Route path="/profile">
+                <UserProfile/>
               </Route>
         </IonRouterOutlet>
       </IonReactRouter>

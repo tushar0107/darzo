@@ -20,6 +20,7 @@ const contactSlice = createSlice({
 		},
 		getContact(state,action:PayloadAction<any>){
 			//get contact 
+			console.log(action.payload);
 		}
 	}
 });

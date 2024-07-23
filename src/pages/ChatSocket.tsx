@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 import Menu from "../components/Menu";
 import {
@@ -8,34 +8,27 @@ import {
   IonFooter,
   IonIcon,
   IonPage,
-  useIonAlert,
 } from "@ionic/react";
 import Header from "../components/Header";
 
 import "../theme/chatpage.css";
 import { sendSharp } from "ionicons/icons";
-import { useDispatch, useSelector } from "react-redux";
-import axios from "axios";
-import { sendMessage } from "../redux/user/messageSlice";
-import vars from "../components/GlobalVars";
-import { SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
-import useSQLiteDB from "../components/Database/LocalDB";
-import WebSocketContext from "../contextapi/WebSocketContext";
+import { useSelector } from "react-redux";
+// import { SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
+// import useSQLiteDB from "../components/Database/LocalDB";
 
 const ChatSocket:React.FC = ()=>{
   const user = useSelector((state:any)=>state.user.user);
   const socket = useSelector((state:any)=>state.websocket.websocket);
-  const dispatch = useDispatch();
+  const contacts = useSelector((state:any)=>state.contacts.contacts);
   const popInfo = useRef(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [popText, setPopText] = useState('');
   const [name, setName] = useState('');
-  var chatHistory = [];
 
-  const { performSQLAction, initialized } = useSQLiteDB();
+  // const { performSQLAction, initialized } = useSQLiteDB();
   
   const params: any = useParams();
-  const [presentAlert] = useIonAlert();
 
   //to set chats array
   const [chats, setChats] = useState<any[]>([]);
@@ -44,8 +37,14 @@ const ChatSocket:React.FC = ()=>{
   //to store a static array of current chats to update on every send
 
 
+
   useEffect(() => {
-    console.log(socket);
+    contacts.forEach((element:any) => {
+      if(element.mobile===params.mobile){
+        setName(element.first_name+' '+element.last_name);
+      }
+    });
+
     if(socket.readyState===WebSocket.OPEN){
       setPopText('Connected');
       setPopoverOpen(true);
@@ -63,10 +62,15 @@ const ChatSocket:React.FC = ()=>{
   
   
   socket.onmessage = (data: any) => {
-    console.log(data);
-    if(JSON.parse(JSON.parse(data.data)).sender === parseInt(params.id)){
-      let message = JSON.parse(JSON.parse(data.data)).msg;
-      let msg = {type: "rec", msg: message};
+    var message = JSON.parse(data.data);
+    if(message.status ==='offline'){
+      setPopText('Offline');
+      setPopoverOpen(true);
+      setTimeout(()=>{
+        setPopoverOpen(false);
+      },2000);
+    }else if(message.sender === params.mobile){
+      let msg = {type: "received", msg: message.msg};
       const newchat = [...chats, { ...msg }];
       setChats(newchat);
     }
@@ -81,12 +85,12 @@ const ChatSocket:React.FC = ()=>{
   //on send by the user the chat is pushed to the chat array and saved to the localstorage
   const sendMsg = () => {
     const data = {sender: user.mobile, receiver: params.mobile, msg: text,type: "sent"};
-    console.log("sent",data);
     if(socket.readyState === WebSocket.OPEN){
       socket.send(JSON.stringify(data));
       setText('');
       const newchat = [...chats, { ...data }];
       setChats(newchat);
+      setText('');
     }else if(socket.readyState === WebSocket.CLOSED){
       setPopText('Offline');
       setPopoverOpen(true);
@@ -94,7 +98,6 @@ const ChatSocket:React.FC = ()=>{
         setPopoverOpen(false);
       },2000);
     }
-    setText('');
   };
 
   return (
@@ -108,20 +111,12 @@ const ChatSocket:React.FC = ()=>{
           </div> : null}
           <div id="chat-section">
             {Array.isArray(chats)
-              ? chats.map((ele: any, key: any) => {
-                  if (ele.type === "rec") {
+              ? chats.map((msg: any, key: any) => {
                     return (
-                      <div key={key} className="message received">
-                        <span>{ele.msg}</span>
+                      <div key={key} className={"message "+msg.type}>
+                        <span>{msg.msg}</span>
                       </div>
                     );
-                  } else if (ele.type === "sent") {
-                    return (
-                      <div key={key} className="message sent">
-                        <span>{ele.msg}</span>
-                      </div>
-                    );
-                  }
                 })
               : null}
           </div>

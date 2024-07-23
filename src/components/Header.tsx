@@ -19,7 +19,6 @@ const Header: React.FC<UserProps> = (props:any) => {
       .then((res) => {
         localStorage.setItem('contacts',JSON.stringify(res.data.result));
         dispatch(storeContacts(res.data.result));
-        // return(res.data.result);
       })
       .catch((err) => {
         console.log(err);
@@ -31,9 +30,9 @@ const Header: React.FC<UserProps> = (props:any) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="end">
-            <IonButton onClick={getContacts}>
+            {window.location.pathname==='/home'?<IonButton onClick={getContacts}>
               <IonIcon icon={reload}></IonIcon>
-            </IonButton>
+            </IonButton>:null}
             <IonButton routerLink="/profile">
               <IonIcon icon={personOutline}></IonIcon>
             </IonButton>
