@@ -1,0 +1,22 @@
+.item-details {
+    padding: 1rem;
+}
+
+
+#login-form{
+    width: 80%;
+    margin: 3rem auto;
+    padding: 2rem;
+    border: 2px solid grey;
+    border-radius:18px;
+    text-align: center;
+}
+#login-form input{
+    padding: 1rem;
+    width: 100%;
+    background-color: transparent;
+    border-radius: .5em;
+    margin: 1rem auto;
+    outline: none;
+    border: 2px solid grey;
+}
