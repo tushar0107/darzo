@@ -1,7 +1,7 @@
 
-const ApiUrl = 'http://127.0.0.1:8626';
+const ApiUrl = 'https://restaurant-booking-app-server.onrender.com';
 
-const WebSocketUrl = 'ws://127.0.0.1:8626';
+const WebSocketUrl = 'ws://restaurant-booking-app-server.onrender.com';
 
 const headers = {
     'Content-Type':'application/x-www-form-urlencoded',
