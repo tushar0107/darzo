@@ -7,17 +7,24 @@ import {
   IonBadge,
   useIonAlert,
 } from "@ionic/react";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import WebSocketContext from "../contextapi/WebSocketContext";
-import ChatSocket from "../pages/ChatSocket";
-import { Route } from "react-router";
-import { storeContacts } from "../redux/user/contactSlice";
 
 const UserPage: React.FC = () => {
   const user = useSelector((state: any) => state.user.user);
-  const dispatch = useDispatch();
   const contacts = useSelector((state:any)=> state.contacts.contacts);
+  const socket = useSelector((state:any)=>state.websocket.websocket);
+  const [newMsg, setNewMsg] = useState(false);
+
+  socket.onmessage = (data:any)=>{
+    console.log(data);
+    var message = JSON.parse(data.data);
+    contacts.forEach((contact:any)=>{
+      if(contact.mobile===message.mobile){
+        contact.msg = message.msg;
+      }
+    });
+  }
   
   
   return (
@@ -33,7 +40,7 @@ const UserPage: React.FC = () => {
                     </IonAvatar>
                     <div className="item-details">
                       <IonLabel>{contact.first_name}</IonLabel>
-                      <IonNote>Text 1</IonNote>
+                      <IonNote>{contact.msg ? contact.msg: ''}</IonNote>
                     </div>
                     <div slot="end">
                       <IonNote>12:56</IonNote>

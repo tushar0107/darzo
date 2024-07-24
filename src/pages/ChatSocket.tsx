@@ -124,7 +124,6 @@ const ChatSocket:React.FC = ()=>{
         </IonContent>
         <IonFooter>
         <div id="chat-actions">
-            <form action="" method="get">
               <input
                 type="text"
                 name="message"
@@ -132,7 +131,6 @@ const ChatSocket:React.FC = ()=>{
                 value={text}
                 onChange={(e: any) => setText(e.target.value)}
               />
-            </form>
             <IonButtons>
               <IonButton onClick={() => sendMsg()}>
                 <IonIcon color="primary" icon={sendSharp}></IonIcon>

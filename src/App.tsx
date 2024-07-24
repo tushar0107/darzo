@@ -24,18 +24,32 @@ import "./theme/variables.css";
 import Home from "./pages/Home";
 import ChatSocket from "./pages/ChatSocket";
 import Register from "./pages/Register";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { storeContacts } from "./redux/user/contactSlice";
 import UserProfile from "./pages/UserProfile";
+import vars from './components/GlobalVars';
+import { setWebSocket } from "./redux/user/websocketSlice";
+import { storeUserData } from "./redux/user/userSlice";
+import { login } from "./redux/user/authSclice";
 
 setupIonicReact();
 
 
 const App: React.FC = () => {
+  var ws: any;
+
+  if (ws) {
+    ws.onerror = ws.onopen = ws.onclose = null;
+    ws.close();
+  }
 
   const dispatch = useDispatch();
-
+  const user = useSelector((state:any)=>state.user.user);
+  if(user){
+      var ws:any = new WebSocket(`${vars.WebSocketUrl}/${user.mobile}`);
+      dispatch(setWebSocket(ws));
+    }
   document.addEventListener("ionBackButton", (ev: any) => {
 
     ev.detail.register(1, () => {
@@ -54,6 +68,13 @@ const App: React.FC = () => {
     if(localContacts!==null){
       dispatch(storeContacts(localContactsArr));
     }
+    const userData: any = localStorage.getItem("user");
+    const user = JSON.parse(userData);
+    if (userData) {
+      dispatch(storeUserData(user));
+      dispatch(login(user));
+    }
+   
   },[]);
 
   return (

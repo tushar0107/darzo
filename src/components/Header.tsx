@@ -17,8 +17,10 @@ const Header: React.FC<UserProps> = (props:any) => {
     await axios
       .get(`${vars.ApiUrl}/api/all-users`)
       .then((res) => {
-        localStorage.setItem('contacts',JSON.stringify(res.data.result));
-        dispatch(storeContacts(res.data.result));
+        if(res.data.status===true){
+          localStorage.setItem('contacts',JSON.stringify(res.data.result));
+          dispatch(storeContacts(res.data.result));
+        }
       })
       .catch((err) => {
         console.log(err);

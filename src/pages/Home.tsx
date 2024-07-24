@@ -19,10 +19,6 @@ import {
 } from "@capacitor/push-notifications";
 import { initializeConnect } from "react-redux/es/components/connect";
 import { setWebSocket } from "../redux/user/websocketSlice";
-import WebSocketContext from "../contextapi/WebSocketContext";
-import { Route } from "react-router";
-import ChatSocket from "./ChatSocket";
-import UserProfile from "./UserProfile";
 
 const Home: React.FC = () => {
   const user = useSelector((state: any) => state.user.user);
@@ -34,12 +30,6 @@ const Home: React.FC = () => {
 
   const [presentAlert] = useIonAlert();
 
-  var ws: any;
-
-  if (ws) {
-    ws.onerror = ws.onopen = ws.onclose = null;
-    ws.close();
-  }
   
 
   const handleLogin = () => {
@@ -47,16 +37,18 @@ const Home: React.FC = () => {
     axios
       .post(`${vars.ApiUrl}/api/login`, { mobile:mobile,password:password }, { headers: vars.headers })
       .then((res) => {
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        dispatch(storeUserData(res.data.user));
-        dispatch(login(res.data.user));
-        ws = new WebSocket(`${vars.WebSocketUrl}/${res.data.user.mobile}`);
-        dispatch(setWebSocket(ws));
-        presentAlert({
-          header: "Login",
-          subHeader: "Hello " + res.data.user.first_name + "!",
-          buttons: ["OK"],
-        });
+        if(res.data.user){
+          localStorage.setItem("user", JSON.stringify(res.data.user));
+          dispatch(storeUserData(res.data.user));
+          dispatch(login(res.data.user));
+          var ws = new WebSocket(`${vars.WebSocketUrl}/${res.data.user.mobile}`);
+          dispatch(setWebSocket(ws));
+          presentAlert({
+            header: "Login",
+            subHeader: "Hello " + res.data.user.first_name + "!",
+            buttons: ["OK"],
+          });
+        }
       })
       .catch((err) => {
         presentAlert({
@@ -69,14 +61,7 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    const userData: any = localStorage.getItem("user");
-    const user = JSON.parse(userData);
-    if (userData !== null) {
-      dispatch(storeUserData(user));
-      dispatch(login(user));
-      ws = new WebSocket(`${vars.WebSocketUrl}/${user.mobile}`);
-      dispatch(setWebSocket(ws));
-    }
+    
 
     
     
