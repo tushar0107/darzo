@@ -71,7 +71,7 @@ const ChatSocket:React.FC = ()=>{
       },2000);
     }else if(message.sender === params.mobile){
       let msg = {type: "received", msg: message.msg};
-      const newchat = [...chats, { ...msg }];
+      const newchat = [{ ...msg }, ...chats];
       setChats(newchat);
     }
   };
@@ -88,7 +88,7 @@ const ChatSocket:React.FC = ()=>{
     if(socket.readyState === WebSocket.OPEN){
       socket.send(JSON.stringify(data));
       setText('');
-      const newchat = [...chats, { ...data }];
+      const newchat = [{ ...data },...chats];
       setChats(newchat);
       setText('');
     }else if(socket.readyState === WebSocket.CLOSED){
@@ -105,20 +105,22 @@ const ChatSocket:React.FC = ()=>{
       <Menu />
       <IonPage id="main-content">
         <Header title={name}/>
-        <IonContent fullscreen>
+        <IonContent>
           {popoverOpen ? <div ref={popInfo} className="status">
             {popText}
           </div> : null}
-          <div id="chat-section">
-            {Array.isArray(chats)
-              ? chats.map((msg: any, key: any) => {
-                    return (
-                      <div key={key} className={"message "+msg.type}>
-                        <span>{msg.msg}</span>
-                      </div>
-                    );
-                })
-              : null}
+          <div id="chat-container">
+            <div id="chat-section">
+              {Array.isArray(chats)
+                ? chats.map((msg: any, key: any) => {
+                      return (
+                        <div key={key} className={"message "+msg.type}>
+                          <span>{msg.msg}</span>
+                        </div>
+                      );
+                  })
+                : null}
+            </div>
           </div>
           
         </IonContent>

@@ -35,7 +35,7 @@ const Header: React.FC<UserProps> = (props:any) => {
             {window.location.pathname==='/home'?<IonButton onClick={getContacts}>
               <IonIcon icon={reload}></IonIcon>
             </IonButton>:null}
-            <IonButton routerLink="/profile">
+            <IonButton routerLink="/home/profile">
               <IonIcon icon={personOutline}></IonIcon>
             </IonButton>
             <IonMenuButton/>
