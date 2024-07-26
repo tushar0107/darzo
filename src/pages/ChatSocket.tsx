@@ -7,6 +7,7 @@ import {
   IonContent,
   IonFooter,
   IonIcon,
+  IonLabel,
   IonPage,
 } from "@ionic/react";
 import Header from "../components/Header";
@@ -25,6 +26,8 @@ const ChatSocket:React.FC = ()=>{
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [popText, setPopText] = useState('');
   const [name, setName] = useState('');
+  const input = useRef<any>(null);
+  input.current?.focus();
 
   // const { performSQLAction, initialized } = useSQLiteDB();
   
@@ -125,19 +128,22 @@ const ChatSocket:React.FC = ()=>{
           
         </IonContent>
         <IonFooter>
-        <div id="chat-actions">
+        <div>
+          <IonLabel id="chat-actions">
               <input
                 type="text"
                 name="message"
                 id="message"
                 value={text}
                 onChange={(e: any) => setText(e.target.value)}
+                ref={input}
               />
             <IonButtons>
               <IonButton onClick={() => sendMsg()}>
                 <IonIcon color="primary" icon={sendSharp}></IonIcon>
               </IonButton>
             </IonButtons>
+            </IonLabel>
           </div>
         </IonFooter>
       </IonPage>

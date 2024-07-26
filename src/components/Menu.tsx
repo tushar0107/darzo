@@ -20,7 +20,7 @@ const Menu: React.FC = () => {
     <IonMenu side="end" contentId="main-content">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Menu Content</IonTitle>
+          <IonTitle>Menu</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding-top">
