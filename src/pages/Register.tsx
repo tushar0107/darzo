@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Menu from "../components/Menu";
 import { IonButton, IonContent, IonPage } from "@ionic/react";
 import Header from "../components/Header";
-import vars from "../components/GlobalVars";
+import {headers, urls} from "../components/GlobalVars";
 
 import "../pages/Home.css";
 import { useHistory } from "react-router";
@@ -39,7 +39,7 @@ const Register: React.FC = () => {
   }
 
   const handleLogin = ()=>{
-      axios.post(`${vars.ApiUrl}/api/register-user`,{...loginData},{headers:vars.headers})
+      axios.post(`${urls.ApiUrl}/api/register-user`,{...loginData},{headers:headers})
       .then((res)=>{
         console.log(res.data);
         history.push('/');

@@ -28,7 +28,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { storeContacts } from "./redux/user/contactSlice";
 import UserProfile from "./pages/UserProfile";
-import vars from './components/GlobalVars';
+import { urls } from './components/GlobalVars';
 import { setWebSocket } from "./redux/user/websocketSlice";
 import { storeUserData } from "./redux/user/userSlice";
 import { login } from "./redux/user/authSclice";
@@ -47,7 +47,7 @@ const App: React.FC = () => {
   const dispatch = useDispatch();
   const user = useSelector((state:any)=>state.user.user);
   if(user){
-      var ws:any = new WebSocket(`${vars.WebSocketUrl}/${user.mobile}`);
+      var ws:any = new WebSocket(`${urls.ApiUrl}/${user.mobile}`);
       dispatch(setWebSocket(ws));
     }
   document.addEventListener("ionBackButton", (ev: any) => {

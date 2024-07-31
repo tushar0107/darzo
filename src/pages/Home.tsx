@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { storeUserData } from "../redux/user/userSlice";
 import { login } from "../redux/user/authSclice";
-import vars from "../components/GlobalVars";
+import {headers, urls} from "../components/GlobalVars";
 
 import {
   ActionPerformed,
@@ -35,13 +35,13 @@ const Home: React.FC = () => {
   const handleLogin = () => {
     console.log("logging in...");
     axios
-      .post(`${vars.ApiUrl}/api/login`, { mobile:mobile,password:password }, { headers: vars.headers })
+      .post(`${urls.ApiUrl}/api/login`, { mobile:mobile,password:password }, { headers: headers })
       .then((res) => {
         if(res.data.user){
           localStorage.setItem("user", JSON.stringify(res.data.user));
           dispatch(storeUserData(res.data.user));
           dispatch(login(res.data.user));
-          var ws = new WebSocket(`${vars.WebSocketUrl}/${res.data.user.mobile}`);
+          var ws = new WebSocket(`${urls.ApiUrl}/${res.data.user.mobile}`);
           dispatch(setWebSocket(ws));
           presentAlert({
             header: "Login",

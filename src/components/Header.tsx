@@ -2,7 +2,7 @@ import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonMenuButton, I
 import React, { useEffect, useRef, useState } from "react";
 import { personOutline, reload } from "ionicons/icons";
 import { useDispatch, useSelector } from "react-redux";
-import vars from "./GlobalVars";
+import { urls } from "./GlobalVars";
 import axios from "axios";
 import { storeContacts } from "../redux/user/contactSlice";
 
@@ -15,7 +15,7 @@ const Header: React.FC<UserProps> = (props:any) => {
 
   const getContacts = async()=>{
     await axios
-      .get(`${vars.ApiUrl}/api/all-users`)
+      .get(`${urls.ApiUrl}/api/chat-users`)
       .then((res) => {
         if(res.data.status===true){
           localStorage.setItem('contacts',JSON.stringify(res.data.result));

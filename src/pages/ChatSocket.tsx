@@ -9,12 +9,15 @@ import {
   IonIcon,
   IonLabel,
   IonPage,
+  useIonLoading,
 } from "@ionic/react";
 import Header from "../components/Header";
 
 import "../theme/chatpage.css";
 import { sendSharp } from "ionicons/icons";
 import { useSelector } from "react-redux";
+import axios from "axios";
+import { urls } from "../components/GlobalVars";
 // import { SQLiteConnection, SQLiteDBConnection } from "@capacitor-community/sqlite";
 // import useSQLiteDB from "../components/Database/LocalDB";
 
@@ -23,6 +26,7 @@ const ChatSocket:React.FC = ()=>{
   const socket = useSelector((state:any)=>state.websocket.websocket);
   const contacts = useSelector((state:any)=>state.contacts.contacts);
   const popInfo = useRef(null);
+  const [loading,dismiss] = useIonLoading();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [popText, setPopText] = useState('');
   const [name, setName] = useState('');
@@ -42,11 +46,25 @@ const ChatSocket:React.FC = ()=>{
 
 
   useEffect(() => {
+    loading({message:'loading...'});
     contacts.forEach((element:any) => {
       if(element.mobile===params.mobile){
         setName(element.first_name+' '+element.last_name);
       }
     });
+
+    if(params){
+
+      axios.post(`${urls.ApiUrl}/api/get-messages`,{sender:user.mobile,receiver:params.mobile}).then((res)=>{
+        console.log(res.data);
+        setChats(res.data.messages);
+        dismiss();
+      }).then(()=>{
+        console.log(chats);
+      }).catch(e=>console.log(e));
+      
+    }
+
 
     if(socket.readyState===WebSocket.OPEN){
       setPopText('Connected');
@@ -87,7 +105,8 @@ const ChatSocket:React.FC = ()=>{
 
   //on send by the user the chat is pushed to the chat array and saved to the localstorage
   const sendMsg = () => {
-    const data = {sender: user.mobile, receiver: params.mobile, msg: text,type: "sent"};
+    
+    const data = {sent: new Date(),sender: user.mobile, receiver: params.mobile, msg: text, status:'sent',read:false};
     if(socket.readyState === WebSocket.OPEN){
       socket.send(JSON.stringify(data));
       setText('');
@@ -117,7 +136,7 @@ const ChatSocket:React.FC = ()=>{
               {Array.isArray(chats)
                 ? chats.map((msg: any, key: any) => {
                       return (
-                        <div key={key} className={"message "+msg.type}>
+                        <div key={key} className={params.mobile==msg.sender?'received message':'sent message'}>
                           <span>{msg.msg}</span>
                         </div>
                       );
