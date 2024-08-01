@@ -18,12 +18,6 @@ const UserPage: React.FC = () => {
 
   socket.onmessage = (data:any)=>{
     console.log(data);
-    var message = JSON.parse(data.data);
-    contacts.forEach((contact:any)=>{
-      if(contact.mobile===message.mobile){
-        contact.msg = message.msg;
-      }
-    });
   }
   
   

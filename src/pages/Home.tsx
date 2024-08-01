@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonPage, useIonAlert } from "@ionic/react";
+import { IonButton, IonContent, IonPage, useIonAlert, useIonLoading } from "@ionic/react";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
@@ -29,31 +29,41 @@ const Home: React.FC = () => {
   const [password,setPassword] = useState('');
 
   const [presentAlert] = useIonAlert();
+  const [loader,dismiss] = useIonLoading();
 
   
 
   const handleLogin = () => {
-    console.log("logging in...");
+    loader({message:"Logging in..."});
     axios
-      .post(`${urls.ApiUrl}/api/login`, { mobile:mobile,password:password }, { headers: headers })
+      .post(`${urls.ApiUrl}/api/chat-login`, { mobile:mobile,password:password }, { headers: headers })
       .then((res) => {
         if(res.data.user){
           localStorage.setItem("user", JSON.stringify(res.data.user));
           dispatch(storeUserData(res.data.user));
           dispatch(login(res.data.user));
-          var ws = new WebSocket(`${urls.ApiUrl}/${res.data.user.mobile}`);
+          var ws = new WebSocket(`${urls.WebSocketUrl}/${res.data.user.mobile}`);
           dispatch(setWebSocket(ws));
+          dismiss();
           presentAlert({
             header: "Login",
-            subHeader: "Hello " + res.data.user.first_name + "!",
+            message: "Hello " + res.data.user.first_name + "!",
+            buttons: ["OK"],
+          });
+        }else{
+          dismiss();
+          presentAlert({
+            header: "Login error!",
+            message: res.data.message,
             buttons: ["OK"],
           });
         }
       })
       .catch((err) => {
-        presentAlert({
+          dismiss();
+          presentAlert({
           header: "Error!!",
-          subHeader: "Server error",
+          message: "Server error",
           buttons: ["OK"],
         });
         console.error(err);

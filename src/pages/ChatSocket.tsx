@@ -61,7 +61,10 @@ const ChatSocket:React.FC = ()=>{
         dismiss();
       }).then(()=>{
         console.log(chats);
-      }).catch(e=>console.log(e));
+      }).catch(e=>{
+        dismiss();
+        console.log(e)
+      });
       
     }
 
@@ -85,14 +88,13 @@ const ChatSocket:React.FC = ()=>{
   socket.onmessage = (data: any) => {
     var message = JSON.parse(data.data);
     if(message.status ==='offline'){
-      setPopText('Offline');
+      setPopText('User Offline');
       setPopoverOpen(true);
       setTimeout(()=>{
         setPopoverOpen(false);
       },2000);
     }else if(message.sender === params.mobile){
-      let msg = {type: "received", msg: message.msg};
-      const newchat = [{ ...msg }, ...chats];
+      const newchat = [{ ...message }, ...chats];
       setChats(newchat);
     }
   };

@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import Menu from "../components/Menu";
-import { IonButton, IonContent, IonPage } from "@ionic/react";
+import { IonButton, IonContent, IonPage, useIonAlert, useIonLoading } from "@ionic/react";
 import Header from "../components/Header";
 import {headers, urls} from "../components/GlobalVars";
 
@@ -19,6 +19,9 @@ const Register: React.FC = () => {
     };
 
   const history = useHistory();
+  const [loader,dismiss] = useIonLoading();
+  const [presentAlert] = useIonAlert();
+
 
   const handleInput = (e:any)=>{
     if(e.target.name==='first_name'){
@@ -39,13 +42,34 @@ const Register: React.FC = () => {
   }
 
   const handleLogin = ()=>{
-      axios.post(`${urls.ApiUrl}/api/register-user`,{...loginData},{headers:headers})
+    loader({message:'Signing up...'});
+      axios.post(`${urls.ApiUrl}/api/chat-register`,{...loginData},{headers:headers})
       .then((res)=>{
-        console.log(res.data);
-        history.push('/');
+        if(res.data.status===true){
+          console.log(res.data);
+          dismiss();
+          presentAlert({
+            header:'Success!!',
+            onDidDismiss:function(){
+              history.push('/');
+            }
+          });
+        }else{
+          dismiss();
+          presentAlert({
+            header:'Error!!',
+            message:res.data.message,
+            buttons:['OK']
+          });
+        }
       })
       .catch((err)=>{
-        console.log(err);
+          dismiss();
+          presentAlert({
+            header:'Error!!',
+            message:err.message,
+            buttons:['OK']
+          });
       })
       console.log(loginData);
   }
