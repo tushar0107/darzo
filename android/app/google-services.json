@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "935711697473",
+    "project_id": "v-connex",
+    "storage_bucket": "v-connex.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:935711697473:android:64ed678a417322376bf4c0",
+        "android_client_info": {
+          "package_name": "com.frozzydev.connex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBOt9eAT9EifrEy0cLHJLWFPZTExm4ZmAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
