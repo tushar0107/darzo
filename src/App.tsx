@@ -40,9 +40,10 @@ setupIonicReact();
 
 const App: React.FC = () => {
   const [notificationCheck,setNotificationCheck]=useState(false);
-  const [chatNotify,setChatNotify]=useState<any>("");
+  const [chatNotify,setChatNotify]=useState<any>("/chat/5559876543");
   const [isOpen, setIsOpen] = useState(false);
   const [notificationRes,setNotificationRes] = useState('');
+
   var ws: any;
 
   if (ws) {
@@ -77,7 +78,7 @@ const App: React.FC = () => {
     // On success, we should be able to receive notifications
     PushNotifications.addListener("registration", (token: Token) => {
       localStorage.setItem("notificationToken", token.value);
-      axios.post(`${urls.ApiUrl}/api/chat-notification/token`,{'mobile':user.mobile,'token':token}).then((res:any)=>{
+      axios.post(`${urls.ApiUrl}/api/chat-notification/token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
         if(res.data.status===true){
           setNotificationRes(res.data.message || 'Push notification is enabled');
           setIsOpen(true);
@@ -143,7 +144,6 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-              {notificationCheck?<Redirect from='/' to={chatNotify}/>:null}
               <Route exact path="/home">
                 <Home />
               </Route>
