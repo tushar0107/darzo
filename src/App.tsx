@@ -71,45 +71,45 @@ const App: React.FC = () => {
   });
 
 
-  const register = () => {
-    // Register with Apple / Google to receive push via APNS/FCM
-    PushNotifications.register();
+  // const register = () => {
+  //   // Register with Apple / Google to receive push via APNS/FCM
+  //   PushNotifications.register();
 
-    // On success, we should be able to receive notifications
-    PushNotifications.addListener("registration", (token: Token) => {
-      localStorage.setItem("notificationToken", token.value);
-      axios.post(`${urls.ApiUrl}/api/chat-notification/token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
-        if(res.data.status===true){
-          setNotificationRes(res.data.message || 'Push notification is enabled');
-          setIsOpen(true);
-        }else{
-          setNotificationRes(res.data.message);
-          setIsOpen(true);
-        }
-      }).catch(e=>console.log(e));
-    });
+  //   // On success, we should be able to receive notifications
+  //   PushNotifications.addListener("registration", (token: Token) => {
+  //     localStorage.setItem("notificationToken", token.value);
+  //     axios.post(`${urls.ApiUrl}/api/chat-notification/token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
+  //       if(res.data.status===true){
+  //         setNotificationRes(res.data.message || 'Push notification is enabled');
+  //         setIsOpen(true);
+  //       }else{
+  //         setNotificationRes(res.data.message);
+  //         setIsOpen(true);
+  //       }
+  //     }).catch(e=>console.log(e));
+  //   });
 
-    // Some issue with our setup and push will not work
-    PushNotifications.addListener("registrationError", (error: any) => {
-      setNotificationRes(error.message || 'Error in enabling push notification');
-      setIsOpen(true);
-    });
+  //   // Some issue with our setup and push will not work
+  //   PushNotifications.addListener("registrationError", (error: any) => {
+  //     setNotificationRes(error.message || 'Error in enabling push notification');
+  //     setIsOpen(true);
+  //   });
 
-    // Show us the notification payload if the app is open on our device
-    PushNotifications.addListener(
-      "pushNotificationReceived",
-      async (notification: any) => {}
-    );
+  //   // Show us the notification payload if the app is open on our device
+  //   PushNotifications.addListener(
+  //     "pushNotificationReceived",
+  //     async (notification: any) => {}
+  //   );
 
-    // Method called when tapping on a notification
-    PushNotifications.addListener(
-      "pushNotificationActionPerformed",
-      (notification: ActionPerformed) => {
-        setNotificationCheck(true);
-        setChatNotify(notification.notification.data.targetPage);
-      }
-    );
-  };
+  //   // Method called when tapping on a notification
+  //   PushNotifications.addListener(
+  //     "pushNotificationActionPerformed",
+  //     (notification: ActionPerformed) => {
+  //       setNotificationCheck(true);
+  //       setChatNotify(notification.notification.data.targetPage);
+  //     }
+  //   );
+  // };
 
   useEffect(()=>{
     var localContacts:any = localStorage.getItem('contacts');
@@ -125,18 +125,18 @@ const App: React.FC = () => {
     }
 
     //push notifications
-    PushNotifications.checkPermissions().then((res) => {
-      if (res.receive !== 'granted') {
-        PushNotifications.requestPermissions().then((res) => {
-          if (res.receive === 'denied') {
-          }else {
-            register();
-          }
-        });
-      }else {
-        register();
-      }
-  });
+  //   PushNotifications.checkPermissions().then((res) => {
+  //     if (res.receive !== 'granted') {
+  //       PushNotifications.requestPermissions().then((res) => {
+  //         if (res.receive === 'denied') {
+  //         }else {
+  //           register();
+  //         }
+  //       });
+  //     }else {
+  //       register();
+  //     }
+  // });
    
   },[]);
 
