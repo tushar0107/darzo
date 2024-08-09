@@ -56,7 +56,6 @@ const ChatSocket:React.FC = ()=>{
     if(params){
 
       axios.post(`${urls.ApiUrl}/api/get-messages`,{sender:user.mobile,receiver:params.mobile}).then((res)=>{
-        console.log(res.data);
         setChats(res.data.messages);
         dismiss();
       }).then(()=>{
@@ -86,7 +85,7 @@ const ChatSocket:React.FC = ()=>{
   
   
   socket.onmessage = (data: any) => {
-    var message = JSON.parse(data.data);
+    var message = JSON.parse(JSON.parse(data.data));
     if(message.status ==='offline'){
       setPopText('User Offline');
       setPopoverOpen(true);

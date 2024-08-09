@@ -16,7 +16,7 @@
 
 :root {
     --primary-blue: #3880ff;
-    --primary-blue-light: #6199ff;
+    --primary-blue-light: #1b3159;
     --common-text-dark: #121212;
     --common-text-light: #e9e9e9;
 }
@@ -65,12 +65,12 @@
 
 #chat-section .received {
     align-self: start;
-    background-color: var(--primary-blue);
+    background-color: var(--primary-blue-light);
 }
 
 #chat-section .sent {
     align-self: end;
-    background-color: var(--primary-blue-light);
+    background-color: var(--primary-blue);
 }
 
 .status {
