@@ -7,16 +7,9 @@ import Header from "../components/Header";
 import Menu from "../components/Menu";
 
 const UserProfile: React.FC = () => {
-  const dispatch = useDispatch();
   const user = useSelector((state: any) => state.user.user);
   const loginStatus = useSelector((state:any)=>state.auth.isAuthenticated);
 
-  useEffect(() => {
-    const userData:any =  localStorage.getItem('user');
-    console.log(JSON.parse(userData));
-    dispatch(storeUserData(JSON.parse(userData)));
-
-  }, [dispatch]);
 
   return (
     <>

@@ -58,8 +58,6 @@ const ChatSocket:React.FC = ()=>{
       axios.post(`${urls.ApiUrl}/api/get-messages`,{sender:user.mobile,receiver:params.mobile}).then((res)=>{
         setChats(res.data.messages);
         dismiss();
-      }).then(()=>{
-        console.log(chats);
       }).catch(e=>{
         dismiss();
         console.log(e)

@@ -32,7 +32,7 @@ import { urls } from './components/GlobalVars';
 import { setWebSocket } from "./redux/user/websocketSlice";
 import { storeUserData } from "./redux/user/userSlice";
 import { login } from "./redux/user/authSclice";
-import { ActionPerformed, PushNotifications, Token } from "@capacitor/push-notifications";
+import { ActionPerformed, PushNotifications, PushNotificationSchema, Token } from "@capacitor/push-notifications";
 import axios from "axios";
 
 setupIonicReact();
@@ -71,45 +71,69 @@ const App: React.FC = () => {
   });
 
 
-  // const register = () => {
-  //   // Register with Apple / Google to receive push via APNS/FCM
-  //   PushNotifications.register();
+  // const register = async() => {
+    //push notifications
+    PushNotifications.checkPermissions().then((res) => {
+      if (res.receive !== 'granted') {
+        PushNotifications.requestPermissions().then(async(res) => {
+          if (res.receive === 'denied') {
+          }else {
+            // Register with Apple / Google to receive push via APNS/FCM
+            await PushNotifications.register();
 
-  //   // On success, we should be able to receive notifications
-  //   PushNotifications.addListener("registration", (token: Token) => {
-  //     localStorage.setItem("notificationToken", token.value);
-  //     axios.post(`${urls.ApiUrl}/api/chat-notification/token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
-  //       if(res.data.status===true){
-  //         setNotificationRes(res.data.message || 'Push notification is enabled');
-  //         setIsOpen(true);
-  //       }else{
-  //         setNotificationRes(res.data.message);
-  //         setIsOpen(true);
-  //       }
-  //     }).catch(e=>console.log(e));
-  //   });
-
-  //   // Some issue with our setup and push will not work
-  //   PushNotifications.addListener("registrationError", (error: any) => {
-  //     setNotificationRes(error.message || 'Error in enabling push notification');
-  //     setIsOpen(true);
-  //   });
-
-  //   // Show us the notification payload if the app is open on our device
-  //   PushNotifications.addListener(
-  //     "pushNotificationReceived",
-  //     async (notification: any) => {}
-  //   );
-
-  //   // Method called when tapping on a notification
-  //   PushNotifications.addListener(
-  //     "pushNotificationActionPerformed",
-  //     (notification: ActionPerformed) => {
-  //       setNotificationCheck(true);
-  //       setChatNotify(notification.notification.data.targetPage);
-  //     }
-  //   );
-  // };
+            // On success, we should be able to receive notifications
+            await PushNotifications.addListener("registration", (token: Token) => {
+              console.log('token: ',token);
+              localStorage.setItem("notificationToken", token.value);
+              axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
+                if(res.data.status===true){
+                  console.log(res.data);
+                }else{
+                  console.log(res.data);
+                }
+              }).catch(e=>console.log(e));
+            });
+          
+            await PushNotifications.addListener('registrationError',
+              (error: any) => {
+                console.log('Error on registration: ' + JSON.stringify(error));
+              }
+            );
+          
+            await PushNotifications.addListener('pushNotificationReceived',
+              (notification: PushNotificationSchema) => {
+                console.log('Push received: ' + JSON.stringify(notification));
+              }
+            );
+          
+            await PushNotifications.addListener('pushNotificationActionPerformed',
+              (notification: ActionPerformed) => {
+                // alert('Push action performed: ' + JSON.stringify(notification));
+              }
+            );
+          
+            // Some issue with our setup and push will not work
+            await PushNotifications.addListener("registrationError", (error: any) => {
+              console.log(error.message);;
+            });
+          
+            // Show us the notification payload if the app is open on our device
+            await PushNotifications.addListener(
+              "pushNotificationReceived",
+              async (notification: any) => {}
+            );
+          
+            // Method called when tapping on a notification
+            await PushNotifications.addListener(
+              "pushNotificationActionPerformed",
+              (notification: ActionPerformed) => {
+                // do action
+              }
+            );
+          }
+        });
+      }
+    });
 
   useEffect(()=>{
     var localContacts:any = localStorage.getItem('contacts');
@@ -124,19 +148,7 @@ const App: React.FC = () => {
       dispatch(login(user));
     }
 
-    //push notifications
-  //   PushNotifications.checkPermissions().then((res) => {
-  //     if (res.receive !== 'granted') {
-  //       PushNotifications.requestPermissions().then((res) => {
-  //         if (res.receive === 'denied') {
-  //         }else {
-  //           register();
-  //         }
-  //       });
-  //     }else {
-  //       register();
-  //     }
-  // });
+    
    
   },[]);
 
@@ -145,7 +157,7 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
               <Route exact path="/home">
-                <Home />
+                <Home/>
               </Route>
               <Route exact path="/">
                 <Redirect to="/home" />

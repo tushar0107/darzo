@@ -20,7 +20,12 @@ import {
 import { initializeConnect } from "react-redux/es/components/connect";
 import { setWebSocket } from "../redux/user/websocketSlice";
 
+// interface HomeProps{
+//   register: Function
+// }
+
 const Home: React.FC = () => {
+  // const {register} = props;
   const user = useSelector((state: any) => state.user.user);
   const loginStatus = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
@@ -71,9 +76,7 @@ const Home: React.FC = () => {
   };
 
   useEffect(() => {
-    
-
-    
+      
     
   }, [dispatch]);
 
