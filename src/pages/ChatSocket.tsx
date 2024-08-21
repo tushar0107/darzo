@@ -83,8 +83,8 @@ const ChatSocket:React.FC = ()=>{
   
   
   socket.onmessage = (data: any) => {
-    var message = JSON.parse(JSON.parse(data.data));
-    if(message.status ==='offline'){
+    var message = JSON.parse(data.data);
+    if(message.status ==='offline' || message.status ==="Not connected"){
       setPopText('User Offline');
       setPopoverOpen(true);
       setTimeout(()=>{

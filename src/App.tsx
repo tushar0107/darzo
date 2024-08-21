@@ -134,6 +134,20 @@ const App: React.FC = () => {
         });
       }
     });
+    PushNotifications.register();
+
+    // On success, we should be able to receive notifications
+    PushNotifications.addListener("registration", (token: Token) => {
+      console.log('token: ',token);
+      localStorage.setItem("notificationToken", token.value);
+      axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
+        if(res.data.status===true){
+          console.log(res.data);
+        }else{
+          console.log(res.data);
+        }
+      }).catch(e=>console.log(e));
+    });
 
   useEffect(()=>{
     var localContacts:any = localStorage.getItem('contacts');
@@ -148,7 +162,11 @@ const App: React.FC = () => {
       dispatch(login(user));
     }
 
-    
+
+
+    return()=>{
+      PushNotifications.removeAllListeners();
+    }    
    
   },[]);
 
