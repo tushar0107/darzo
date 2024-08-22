@@ -39,10 +39,7 @@ setupIonicReact();
 
 
 const App: React.FC = () => {
-  const [notificationCheck,setNotificationCheck]=useState(false);
-  const [chatNotify,setChatNotify]=useState<any>("/chat/5559876543");
   const [isOpen, setIsOpen] = useState(false);
-  const [notificationRes,setNotificationRes] = useState('');
 
   var ws: any;
 
@@ -71,83 +68,75 @@ const App: React.FC = () => {
   });
 
 
-  // const register = async() => {
-    //push notifications
     PushNotifications.checkPermissions().then((res) => {
-      if (res.receive !== 'granted') {
-        PushNotifications.requestPermissions().then(async(res) => {
-          if (res.receive === 'denied') {
-          }else {
-            // Register with Apple / Google to receive push via APNS/FCM
-            await PushNotifications.register();
-
-            // On success, we should be able to receive notifications
-            await PushNotifications.addListener("registration", (token: Token) => {
-              console.log('token: ',token);
-              localStorage.setItem("notificationToken", token.value);
-              axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
-                if(res.data.status===true){
-                  console.log(res.data);
-                }else{
-                  console.log(res.data);
-                }
-              }).catch(e=>console.log(e));
-            });
-          
-            await PushNotifications.addListener('registrationError',
-              (error: any) => {
-                console.log('Error on registration: ' + JSON.stringify(error));
-              }
-            );
-          
-            await PushNotifications.addListener('pushNotificationReceived',
-              (notification: PushNotificationSchema) => {
-                console.log('Push received: ' + JSON.stringify(notification));
-              }
-            );
-          
-            await PushNotifications.addListener('pushNotificationActionPerformed',
-              (notification: ActionPerformed) => {
-                // alert('Push action performed: ' + JSON.stringify(notification));
-              }
-            );
-          
-            // Some issue with our setup and push will not work
-            await PushNotifications.addListener("registrationError", (error: any) => {
-              console.log(error.message);;
-            });
-          
-            // Show us the notification payload if the app is open on our device
-            await PushNotifications.addListener(
-              "pushNotificationReceived",
-              async (notification: any) => {}
-            );
-          
-            // Method called when tapping on a notification
-            await PushNotifications.addListener(
-              "pushNotificationActionPerformed",
-              (notification: ActionPerformed) => {
-                // do action
-              }
-            );
-          }
+      console.log('checkpermission',res);
+    });
+    PushNotifications.requestPermissions().then(async(res) => {
+      console.log('requestpermission',res);
+      if (res.receive !== 'denied'){
+        // Register with Apple / Google to receive push via APNS/FCM
+        await PushNotifications.register().then(async(res)=>{
+          console.log('requestpermission',res);
         });
+
+        // On success, we should be able to receive notifications
+        await PushNotifications.addListener("registration", (token: Token) => {
+          console.log('token: ',token);
+          localStorage.setItem("notificationToken", token.value);
+        });
+      
+        await PushNotifications.addListener('registrationError',
+          (error: any) => {
+            console.log('Error on registration: ' + JSON.stringify(error));
+          }
+        );
+      
+        // await PushNotifications.addListener('pushNotificationReceived',
+        //   (notification: PushNotificationSchema) => {
+        //     console.log('Push received: ' + JSON.stringify(notification));
+        //   }
+        // );
+      
+        // await PushNotifications.addListener('pushNotificationActionPerformed',
+        //   (notification: ActionPerformed) => {
+        //     // alert('Push action performed: ' + JSON.stringify(notification));
+        //   }
+        // );
+      
+        // Some issue with our setup and push will not work
+        await PushNotifications.addListener("registrationError", (error: any) => {
+          console.log(error.message);;
+        });
+      
+        // // Show us the notification payload if the app is open on our device
+        // await PushNotifications.addListener(
+        //   "pushNotificationReceived",
+        //   async (notification: any) => {}
+        // );
+      
+        // // Method called when tapping on a notification
+        // await PushNotifications.addListener(
+        //   "pushNotificationActionPerformed",
+        //   (notification: ActionPerformed) => {
+        //     // do action
+        //   }
+        // );
       }
     });
-    PushNotifications.register();
+    // PushNotifications.register();
 
-    // On success, we should be able to receive notifications
-    PushNotifications.addListener("registration", (token: Token) => {
-      console.log('token: ',token);
-      localStorage.setItem("notificationToken", token.value);
-      axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
-        if(res.data.status===true){
-          console.log(res.data);
-        }else{
-          console.log(res.data);
-        }
-      }).catch(e=>console.log(e));
-    });
+    // // On success, we should be able to receive notifications
+    // PushNotifications.addListener("registration", (token: Token) => {
+    //   console.log('token: ',token);
+    //   localStorage.setItem("notificationToken", token.value);
+    //   axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
+    //     if(res.data.status===true){
+    //       console.log(res.data);
+    //     }else{
+    //       console.log(res.data);
+    //     }
+    //   }).catch(e=>console.log(e));
+    // });
 
   useEffect(()=>{
     var localContacts:any = localStorage.getItem('contacts');
@@ -193,7 +182,7 @@ const App: React.FC = () => {
       </IonReactRouter>
       <IonToast
           isOpen={isOpen}
-          message={notificationRes}
+          message={'Push notification enabled'}
           onDidDismiss={() => setIsOpen(false)}
           duration={3000}
           buttons={[

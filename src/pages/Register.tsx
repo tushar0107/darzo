@@ -22,6 +22,7 @@ const Register: React.FC = () => {
   const [loader,dismiss] = useIonLoading();
   const [presentAlert] = useIonAlert();
 
+  const token = localStorage.getItem('notificationToken');
 
   const handleInput = (e:any)=>{
     if(e.target.name==='first_name'){
@@ -61,6 +62,16 @@ const Register: React.FC = () => {
             message:res.data.message,
             buttons:['OK']
           });
+        }
+      }).then(()=>{
+        if(token){
+          axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':loginData.mobile,'token':token}).then((res:any)=>{
+            if(res.data.status===true){
+              console.log(res.data);
+            }else{
+              console.log(res.data);
+            }
+          }).catch(e=>console.log(e));
         }
       })
       .catch((err)=>{
