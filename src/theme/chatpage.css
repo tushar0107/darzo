@@ -3,6 +3,8 @@
         --background-color: #2e2e2e;
         --primary-text-light: #111111;
         --secondary-text-light: #4e4e4e;
+        --secondary-text-bg: #222222;
+        --contrast-text: #dddddd;
     }
 }
 
@@ -11,6 +13,8 @@
         --background-color: #e9e9e9;
         --primary-text-light: #f1f1f1;
         --secondary-text-light: #c9c9c9;
+        --secondary-text-bg: #dddddd;
+        --contrast-text: #222222;
     }
 }
 
@@ -65,7 +69,8 @@
 
 #chat-section .received {
     align-self: start;
-    background-color: var(--primary-blue-light);
+    background-color: var(--secondary-text-bg);
+    color: var(--contrast-text);
 }
 
 #chat-section .sent {
