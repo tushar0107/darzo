@@ -5,25 +5,26 @@ import {
   IonLabel,
   IonNote,
   IonBadge,
-  useIonAlert,
 } from "@ionic/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 const UserPage: React.FC = () => {
   const user = useSelector((state: any) => state.user.user);
   const contacts = useSelector((state:any)=> state.contacts.contacts);
   const socket = useSelector((state:any)=>state.websocket.websocket);
-  const [newMsg, setNewMsg] = useState(false);
+  const [newMsg, setNewMsg] = useState<any>();
 
   socket.onmessage = (data:any)=>{
-    console.log(data);
+    var message = JSON.parse(data.data);
+    setNewMsg(message);
   }
+
   
   
   return (
     <>
-      <IonList lines="full" typeof="ios" className="chat-list">
+      {contacts.length!=0?<IonList lines="full" typeof="ios" className="chat-list">
         {Array.isArray(contacts)
           ? contacts.map((contact:any, key:any) => {
               if(contact.mobile!==user.mobile){
@@ -34,21 +35,17 @@ const UserPage: React.FC = () => {
                     </IonAvatar>
                     <div className="item-details">
                       <IonLabel>{contact.first_name}</IonLabel>
-                      <IonNote>{contact.msg ? contact.msg: ''}</IonNote>
+                      <IonNote>{newMsg && newMsg.sender==contact.mobile?newMsg.msg:''}</IonNote>
                     </div>
                     <div slot="end">
-                      <IonNote>12:56</IonNote>
-                      <br />
-                      <IonBadge color="success" className="chat-badge">
-                        5
-                      </IonBadge>
+                      <IonNote>{newMsg && newMsg.sender==contact.mobile?new Date(newMsg.sent).toLocaleTimeString().slice(0,5):''}</IonNote>
                     </div>
                   </IonItem>
                 )
               }
             })
           : null}
-      </IonList>
+      </IonList>: <IonNote color="medium">Tap the refresh icon in the header</IonNote>}
     </>
   );
 };
