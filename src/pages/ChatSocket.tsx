@@ -105,7 +105,7 @@ const ChatSocket:React.FC = ()=>{
   //on send by the user the chat is pushed to the chat array and saved to the localstorage
   const sendMsg = () => {
     
-    const data = {sent: new Date(),sender: user.mobile, receiver: params.mobile,name:name, msg: text, status:'sent',read:false};
+    const data = {sent: new Date(),sender: user.mobile, receiver: params.mobile,name:user.first_name+" "+user.last_name, msg: text, status:'sent',read:false};
     if(socket.readyState === WebSocket.OPEN){
       socket.send(JSON.stringify(data));
       setText('');
