@@ -30,8 +30,8 @@ const Home: React.FC = () => {
   const loginStatus = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
 
-  const [mobile, setMobile] = useState<any>("");
-  const [password,setPassword] = useState('');
+  const [mobile, setMobile] = useState<any>("5558765432");
+  const [password,setPassword] = useState('123456');
 
   const [presentAlert] = useIonAlert();
   const [loader,dismiss] = useIonLoading();
