@@ -175,7 +175,7 @@ const App: React.FC = () => {
               <Route path="/chat/:mobile">
                 <ChatSocket />
               </Route>
-              <Route path="/home/profile">
+              <Route path="/profile">
                 <UserProfile/>
               </Route>
         </IonRouterOutlet>

@@ -42,7 +42,7 @@ const Header: React.FC<UserProps> = (props:any) => {
                 <IonIcon icon={reload}></IonIcon>
               </IonButton>:null
             }
-            <IonButton routerLink="/home/profile" routerDirection="forward">
+            <IonButton routerLink="/profile" routerDirection="forward">
               <IonIcon icon={personOutline}></IonIcon>
             </IonButton>
             <IonMenuButton/>

@@ -26,20 +26,27 @@
 }
 
 #chat-actions {
-    display: grid;
-    padding: 1rem;
+    display: flex;
+    align-items: flex-end;
+    height: fit-content;
+    padding: .5rem;
     gap: .5rem;
-    grid-template-columns: 90% 10%;
+    overflow-y: hidden;
     background-color: var(--background-color);
 }
 
+#chat-actions ion-textarea{
+    max-height: 200px;
+    overflow-y: auto;
+}
+#chat-actions textarea,
 #chat-actions input {
-    display: inline-block;
+    display: block;
     width: 100%;
-    padding: .6rem 1rem;
-    border-radius: 100px;
-    border: 2px solid grey;
+    padding: .6rem;
     outline: none;
+    border: 2px solid var(--secondary-text-light);
+    border-radius: 20px;
     background-color: transparent;
 }
 #chat-container{
@@ -59,7 +66,8 @@
 }
 
 #chat-section .message {
-    max-width: 70%;
+    max-width: 60%;
+    min-width: 120px;
     width: fit-content;
     padding: 8px;
     margin: 4px 0;
@@ -71,13 +79,26 @@
     align-self: start;
     background-color: var(--secondary-text-bg);
     color: var(--contrast-text);
+    white-space: pre-line;
 }
 
 #chat-section .sent {
     align-self: end;
     background-color: var(--primary-blue);
+    white-space: pre-line;
 }
-
+#chat-section .message .time{
+    display: block;
+    text-align: right;
+    font-size: 12px;
+    letter-spacing: 1px;
+}
+#chat-section .message ion-img {
+    aspect-ratio: 1;
+    object-fit: cover;
+    object-position: top;
+    background-color: var(--primary-text-light);
+}
 .status {
     /* border: 1px solid red; */
     position: absolute;
@@ -92,4 +113,30 @@
     border-radius: 8px;
     box-shadow: 0px 1px 6px #a2a2a294;
     transition: all .4s ease;
+}
+
+#image-select-slider{
+    position: absolute;
+    z-index: 1000;
+    bottom: 100%;
+    display: grid;
+    width: 100%;
+    padding: .5rem;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 1rem;
+    background-color: var(--background-color);
+}
+#image-select-slider ion-img,
+#image-select-slider video{
+    width: 100%;
+    aspect-ratio: 1;
+    border: 1px solid var(--common-text-light);
+}
+#image-select-slider ion-icon{
+    position: absolute;
+    top: -40px;
+    left: 10px;
+    padding: 8px;
+    border-radius: 50px;
+    background-color: #c9c9c944;
 }

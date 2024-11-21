@@ -27,7 +27,7 @@ const Menu: React.FC = () => {
         <IonList>
           <IonItem routerLink="/register" routerDirection="forward">
             <IonIcon icon={cardOutline}></IonIcon>
-            <IonLabel class="ion-padding-start">Resister</IonLabel>
+            <IonLabel class="ion-padding-start">Register</IonLabel>
           </IonItem>
           <IonItem
             routerLink="/home"

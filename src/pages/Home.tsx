@@ -1,9 +1,8 @@
-import { IonButton, IonContent, IonPage, useIonAlert, useIonLoading } from "@ionic/react";
-import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
+import { IonButton, IonContent, IonPage, IonTab, IonTabBar, IonTabButton, IonTabs, useIonAlert, useIonLoading } from "@ionic/react";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 import "./Home.css";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import UserPage from "../components/UserPage";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
@@ -11,21 +10,11 @@ import { storeUserData } from "../redux/user/userSlice";
 import { login } from "../redux/user/authSclice";
 import {headers, urls} from "../components/GlobalVars";
 
-import {
-  ActionPerformed,
-  PushNotificationSchema,
-  PushNotifications,
-  Token,
-} from "@capacitor/push-notifications";
-import { initializeConnect } from "react-redux/es/components/connect";
 import { setWebSocket } from "../redux/user/websocketSlice";
+import Footer from "../components/Footer";
 
-// interface HomeProps{
-//   register: Function
-// }
 
 const Home: React.FC = () => {
-  // const {register} = props;
   const user = useSelector((state: any) => state.user.user);
   const loginStatus = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
@@ -122,6 +111,7 @@ const Home: React.FC = () => {
             </>
           )}
         </IonContent>
+        <Footer/>
       </IonPage>
     </>
   );
