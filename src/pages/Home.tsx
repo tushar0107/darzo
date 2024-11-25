@@ -12,15 +12,17 @@ import {headers, urls} from "../components/GlobalVars";
 
 import { setWebSocket } from "../redux/user/websocketSlice";
 import Footer from "../components/Footer";
+import { useHistory } from "react-router";
 
 
 const Home: React.FC = () => {
   const user = useSelector((state: any) => state.user.user);
   const loginStatus = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
+  const history = useHistory();
 
-  const [mobile, setMobile] = useState<any>("5558765432");
-  const [password,setPassword] = useState('123456');
+  const [mobile, setMobile] = useState<any>("");
+  const [password,setPassword] = useState('');
 
   const [presentAlert] = useIonAlert();
   const [loader,dismiss] = useIonLoading();
@@ -42,7 +44,7 @@ const Home: React.FC = () => {
           presentAlert({
             header: "Login",
             message: "Hello " + res.data.user.first_name + "!",
-            buttons: ["OK"],
+            buttons: ["Hi!"],
           });
         }else{
           dismiss();
@@ -85,7 +87,7 @@ const Home: React.FC = () => {
     <>
       <Menu />
       <IonPage id="main-content">
-        <Header title="Home" />
+        <Header title="Home" status={null}/>
         <IonContent fullscreen>
           {loginStatus ? (
             <>
@@ -107,11 +109,13 @@ const Home: React.FC = () => {
                 <IonButton onClick={handleLogin} color="primary">
                   <strong>Sign in</strong>
                 </IonButton>
+                <IonButton onClick={()=>history.push('/register')} color="primary">
+                  <strong>Register</strong>
+                </IonButton>
               </div>
             </>
           )}
         </IonContent>
-        <Footer/>
       </IonPage>
     </>
   );

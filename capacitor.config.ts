@@ -5,7 +5,8 @@ const config: CapacitorConfig = {
   appName: 'darzo',
   webDir: 'dist',
   server: {
-    androidScheme: 'http'
+    cleartext: true,
+    androidScheme: "http"
   },
   plugins: {
     PushNotifications: {

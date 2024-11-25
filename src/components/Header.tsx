@@ -1,16 +1,20 @@
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonMenuButton, IonTitle, IonPopover, IonContent, useIonLoading } from "@ionic/react";
-import React, { useEffect, useRef, useState } from "react";
-import { personOutline, reload } from "ionicons/icons";
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonTitle, useIonLoading, } from "@ionic/react";
+import React from "react";
+import { logOutOutline, personOutline, reload } from "ionicons/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { urls } from "./GlobalVars";
 import axios from "axios";
 import { storeContacts } from "../redux/user/contactSlice";
+import { clearUserData } from "../redux/user/userSlice";
+import { logout } from "../redux/user/authSclice";
 
 interface UserProps{
   title: string;
+  status:string | null;
 }
 
 const Header: React.FC<UserProps> = (props:any) => {
+  const loginStatus = useSelector((state: any) => state.auth.isAuthenticated);
   const dispatch = useDispatch();
   const [loader,dismiss] = useIonLoading();
 
@@ -36,18 +40,24 @@ const Header: React.FC<UserProps> = (props:any) => {
       <IonHeader>
         <IonToolbar>
           <IonButtons slot="end">
-            {
-              window.location.pathname==='/home'?
-              <IonButton onClick={getContacts}>
-                <IonIcon icon={reload}></IonIcon>
-              </IonButton>:null
-            }
-            <IonButton routerLink="/profile" routerDirection="forward">
-              <IonIcon icon={personOutline}></IonIcon>
-            </IonButton>
-            <IonMenuButton/>
+            {loginStatus?
+            <>
+              {
+                window.location.pathname==='/home'?
+                <IonButton onClick={getContacts}>
+                  <IonIcon icon={reload}></IonIcon>
+                </IonButton>:null
+              }
+              <IonButton routerLink="/profile" routerDirection="forward">
+                <IonIcon icon={personOutline}></IonIcon>
+              </IonButton>
+              <IonButton routerLink="/" routerDirection="root" onClick={()=>{dispatch(clearUserData());dispatch(logout())}}>
+                <IonIcon icon={logOutOutline}></IonIcon>
+              </IonButton>
+            </>
+            :null}
           </IonButtons>
-        <IonTitle>{props.title}</IonTitle>
+        <IonTitle>{props.title}{props.status?<span style={{display:'inline-block',width:'10px',height:'10px',marginInlineStart:'5px',backgroundColor:'#00ff00',borderRadius:'20px',}}></span>:null}</IonTitle>
         </IonToolbar>
       </IonHeader>
     </>

@@ -47,10 +47,10 @@ const Register: React.FC = () => {
       axios.post(`${urls.ApiUrl}/api/chat-register`,{...loginData},{headers:headers})
       .then((res)=>{
         if(res.data.status===true){
-          console.log(res.data);
           dismiss();
           presentAlert({
-            header:'Success!!',
+            header:'Registered!!',
+            buttons:['OK'],
             onDidDismiss:function(){
               history.push('/');
             }
@@ -96,7 +96,7 @@ const Register: React.FC = () => {
     <>
       <Menu />
       <IonPage id="main-content">
-        <Header title="login" />
+        <Header title="Sign up" status={null}/>
         <IonContent fullscreen>
           <div id="login-form">
             <h1>Register</h1>

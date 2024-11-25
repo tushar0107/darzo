@@ -4,10 +4,9 @@ import {
   IonAvatar,
   IonLabel,
   IonNote,
-  IonBadge,
 } from "@ionic/react";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
 
 const UserPage: React.FC = () => {
   const user = useSelector((state: any) => state.user.user);
@@ -38,7 +37,7 @@ const UserPage: React.FC = () => {
                       <IonNote>{newMsg && newMsg.sender==contact.mobile?newMsg.msg:''}</IonNote>
                     </div>
                     <div slot="end">
-                      <IonNote>{newMsg && newMsg.sender==contact.mobile?new Date(newMsg.sent).toLocaleTimeString().slice(0,5):''}</IonNote>
+                      <IonNote>{newMsg && newMsg.sender==contact.mobile?newMsg.sent:''}</IonNote>
                     </div>
                   </IonItem>
                 )

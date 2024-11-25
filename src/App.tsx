@@ -34,6 +34,7 @@ import { storeUserData } from "./redux/user/userSlice";
 import { login } from "./redux/user/authSclice";
 import { ActionPerformed, PushNotifications, PushNotificationSchema, Token } from "@capacitor/push-notifications";
 import axios from "axios";
+import { FilePicker } from "@capawesome/capacitor-file-picker";
 
 setupIonicReact();
 
@@ -91,52 +92,24 @@ const App: React.FC = () => {
           }
         );
       
-        // await PushNotifications.addListener('pushNotificationReceived',
-        //   (notification: PushNotificationSchema) => {
-        //     console.log('Push received: ' + JSON.stringify(notification));
-        //   }
-        // );
-      
-        // await PushNotifications.addListener('pushNotificationActionPerformed',
-        //   (notification: ActionPerformed) => {
-        //     // alert('Push action performed: ' + JSON.stringify(notification));
-        //   }
-        // );
-      
         // Some issue with our setup and push will not work
         await PushNotifications.addListener("registrationError", (error: any) => {
           console.log(error.message);;
         });
-      
-        // // Show us the notification payload if the app is open on our device
-        // await PushNotifications.addListener(
-        //   "pushNotificationReceived",
-        //   async (notification: any) => {}
-        // );
-      
-        // // Method called when tapping on a notification
-        // await PushNotifications.addListener(
-        //   "pushNotificationActionPerformed",
-        //   (notification: ActionPerformed) => {
-        //     // do action
-        //   }
-        // );
       }
     });
-    // PushNotifications.register();
 
-    // // On success, we should be able to receive notifications
-    // PushNotifications.addListener("registration", (token: Token) => {
-    //   console.log('token: ',token);
-    //   localStorage.setItem("notificationToken", token.value);
-    //   axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':user?.mobile,'token':token}).then((res:any)=>{
-    //     if(res.data.status===true){
-    //       console.log(res.data);
-    //     }else{
-    //       console.log(res.data);
-    //     }
-    //   }).catch(e=>console.log(e));
-    // });
+    const checkPermissions = async () => {
+      const result = await FilePicker.checkPermissions();
+      if(result){
+        alert(JSON.stringify('filepicker permission: '+result));
+      }
+    };
+    const requestPermissions = async () => {
+      const result = await FilePicker.requestPermissions();
+    };
+    
+    
 
   useEffect(()=>{
     var localContacts:any = localStorage.getItem('contacts');
@@ -150,8 +123,9 @@ const App: React.FC = () => {
       dispatch(storeUserData(user));
       dispatch(login(user));
     }
+    checkPermissions();
 
-
+    requestPermissions();
 
     return()=>{
       PushNotifications.removeAllListeners();

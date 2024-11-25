@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { useSelector } from "react-redux";
 
 interface UserState {
   user: any,
@@ -19,6 +18,8 @@ const userSlice = createSlice({
     },
     clearUserData(state) {
       state.user = null;
+      localStorage.removeItem('user');
+      window.location.reload();
     },
   },
 });
