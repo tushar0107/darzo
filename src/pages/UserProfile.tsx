@@ -15,7 +15,7 @@ const UserProfile: React.FC = () => {
     <>
       <Menu />
       <IonPage id="main-content">
-        <Header title="User Profile" />
+        <Header title="User Profile" status={null}/>
         <IonContent fullscreen className="ion-padding">
           {loginStatus ?
           <>

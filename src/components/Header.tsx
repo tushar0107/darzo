@@ -10,7 +10,7 @@ import { logout } from "../redux/user/authSclice";
 
 interface UserProps{
   title: string;
-  status:string | null;
+  status:string | null | undefined;
 }
 
 const Header: React.FC<UserProps> = (props:any) => {
