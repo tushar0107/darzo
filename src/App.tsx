@@ -32,8 +32,7 @@ import { urls } from './components/GlobalVars';
 import { setWebSocket } from "./redux/user/websocketSlice";
 import { storeUserData } from "./redux/user/userSlice";
 import { login } from "./redux/user/authSclice";
-import { ActionPerformed, PushNotifications, PushNotificationSchema, Token } from "@capacitor/push-notifications";
-import axios from "axios";
+import { PushNotifications, Token } from "@capacitor/push-notifications";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
 
 setupIonicReact();

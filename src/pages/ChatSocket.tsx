@@ -132,7 +132,6 @@ const ChatSocket: React.FC = () => {
 
         if(previews.length){
             formData.append('media',JSON.stringify(previews));
-            formData.append('nsme','dfgdf');
             axios.post(urls.ApiUrl+'/api/send-media',formData,{headers:{'accept': 'application/json','Content-Type':'multipart/form-data'}}).then((res:any)=>{
                 console.log('res',res.data);
                 if(res.data.status){
@@ -165,31 +164,18 @@ const ChatSocket: React.FC = () => {
             if(mediaFiles[i].size<(26000000)){
                 const {blob,data,mimeType,name} = mediaFiles[i];
                 const timestamp = Date.now();
-                if(blob){
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = function () {
-                        rawFiles.push({
-                            blob: reader.result,
-                            type: mimeType.split("/")[0],
-                            name: timestamp+'-'+name,
-                        });
-                    };
-                }else if(data){
+                if(data){
                     rawFiles.push({
                         blob: 'data:'+mimeType+';base64,'+data,
                         type: mimeType.split("/")[0],
                         name: timestamp+'-'+name,
                     });
                 }
-                console.log(rawFiles);
-                if(rawFiles.length === mediaFiles.length) {
-                    setPreviews(rawFiles);
-                }
             }else{
                 notify('File Limit Exceeds 25MB');
             }
         }
+        setPreviews(rawFiles);
     };
 
     const fileSelect = () => {
@@ -276,9 +262,9 @@ const ChatSocket: React.FC = () => {
               onChange={(e: any) => setText(e.target.value)} 
               placeholder="Message.."></IonTextarea> */}
                             <IonButtons>
-                                <IonButton onClick={() => fileSelect()}>
+                                {/* <IonButton onClick={() => fileSelect()}>
                                     <IonIcon color="white" icon={images}></IonIcon>
-                                </IonButton>
+                                </IonButton> */}
                                 <IonButton onClick={() => {previews.length ? sendMedia() : sendMsg();}}>
                                     <IonIcon color="white" icon={sendSharp}></IonIcon>
                                 </IonButton>
@@ -292,8 +278,3 @@ const ChatSocket: React.FC = () => {
 };
 
 export default ChatSocket;
-
-// code from: https://github.com/aaronksaunders/ionic7-react-sqlite/blob/main/src/pages/Home.tsx
-
-
-
