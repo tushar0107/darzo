@@ -119,7 +119,6 @@ const ChatSocket: React.FC = () => {
     };
 
     const sendMedia = () => {
-        const formData = new FormData();
         var time = new Date();
         var meridian = time.getHours() > 11 ? " PM" : " AM";
         const data: any = {
@@ -127,33 +126,22 @@ const ChatSocket: React.FC = () => {
             sender: user.mobile,
             receiver: params.mobile,
             name: user.first_name + " " + user.last_name,
-            msg: text
         };
 
         if(previews.length){
-            formData.append('media',JSON.stringify(previews));
-            axios.post(urls.ApiUrl+'/api/send-media',formData,{headers:{'accept': 'application/json','Content-Type':'multipart/form-data'}}).then((res:any)=>{
-                console.log('res',res.data);
-                if(res.data.status){
-                    const tempArr:any = previews.map((file:any)=>{
-                        const fileMsg = {...data};
-                        delete fileMsg.msg;
-                        fileMsg['file'] = urls.ApiUrl+'/'+file.name;
-                        fileMsg['filetype'] = file.type;
-                        if (socket.readyState === WebSocket.OPEN) {
-                            socket.send(JSON.stringify(fileMsg));
-                        } else if (socket.readyState === WebSocket.CLOSED) {
-                            notify("Offline");
-                        }
-                        return fileMsg;
-                    });
-                    setChats([...tempArr, ...chats]);
-                    setText('');
-                    setPreviews([]);
-                }else{
-                    notify("Failed");
+            const tempArr:any = previews.map((file:any)=>{
+                const fileMsg = {...data};
+                fileMsg['file'] = file.blob;
+                fileMsg['filetype'] = file.type;
+                if (socket.readyState === WebSocket.OPEN) {
+                    socket.send(JSON.stringify(fileMsg));
+                } else if (socket.readyState === WebSocket.CLOSED) {
+                    notify("Offline");
                 }
-            }).catch(e=>{console.log(e.message)});
+                return fileMsg;
+            });
+            setChats([...tempArr, ...chats]);
+            setPreviews([]);
         }
     };
 
@@ -161,7 +149,7 @@ const ChatSocket: React.FC = () => {
         var rawFiles: any = [...previews];
 
         for (let i = 0; i < mediaFiles.length; i++) {
-            if(mediaFiles[i].size<(26000000)){
+            if(mediaFiles[i].size<(10485760)){
                 const {blob,data,mimeType,name} = mediaFiles[i];
                 const timestamp = Date.now();
                 if(data){
@@ -172,7 +160,7 @@ const ChatSocket: React.FC = () => {
                     });
                 }
             }else{
-                notify('File Limit Exceeds 25MB');
+                notify('File Limit Exceeds 10MB');
             }
         }
         setPreviews(rawFiles);
@@ -262,9 +250,9 @@ const ChatSocket: React.FC = () => {
               onChange={(e: any) => setText(e.target.value)} 
               placeholder="Message.."></IonTextarea> */}
                             <IonButtons>
-                                {/* <IonButton onClick={() => fileSelect()}>
+                                <IonButton onClick={() => fileSelect()}>
                                     <IonIcon color="white" icon={images}></IonIcon>
-                                </IonButton> */}
+                                </IonButton>
                                 <IonButton onClick={() => {previews.length ? sendMedia() : sendMsg();}}>
                                     <IonIcon color="white" icon={sendSharp}></IonIcon>
                                 </IonButton>
