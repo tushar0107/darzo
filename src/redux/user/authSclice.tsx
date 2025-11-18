@@ -12,19 +12,29 @@ const initialState: AuthState = {
 
 const authSlice = createSlice({
     name: 'auth',
-    initialState,
+    initialState:initialState,
     reducers: {
-        login(state, action: PayloadAction<any>){
+        login(state){
             state.isAuthenticated = true;
-            state.user = action.payload;
         },
         logout(state){
             state.isAuthenticated = false;
             state.user = null;
+		    localStorage.setItem("user", JSON.stringify({}));
+        },
+        storeUserData(state, action: PayloadAction<any>) {
+            state.user = action.payload;
+		    localStorage.setItem("user", JSON.stringify(state.user));
+            // if(state.user.mobile){
+            //     state.isAuthenticated = true;
+            // }
+        },
+        clearUserData(state) {
+            window.location.reload();
         },
         //define other actions
     },
 });
 
-export const { login, logout} = authSlice.actions;
+export const { login, logout, storeUserData, clearUserData} = authSlice.actions;
 export default authSlice.reducer;

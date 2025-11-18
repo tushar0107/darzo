@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import Menu from "../components/Menu";
 import { IonButton, IonContent, IonPage, useIonAlert, useIonLoading } from "@ionic/react";
 import Header from "../components/Header";
-import {headers, urls} from "../components/GlobalVars";
+import {ApiUrl, headers} from "../components/GlobalVars";
 
 import "../pages/Home.css";
 import { useHistory } from "react-router";
@@ -44,7 +44,7 @@ const Register: React.FC = () => {
 
   const handleLogin = ()=>{
     loader({message:'Signing up...'});
-      axios.post(`${urls.ApiUrl}/api/chat-register`,{...loginData},{headers:headers})
+      axios.post(`${ApiUrl}/api/chat-register`,{...loginData},{headers:headers})
       .then((res)=>{
         if(res.data.status===true){
           dismiss();
@@ -65,7 +65,7 @@ const Register: React.FC = () => {
         }
       }).then(()=>{
         if(token){
-          axios.post(`${urls.ApiUrl}/api/get-token`,{'mobile':loginData.mobile,'token':token}).then((res:any)=>{
+          axios.post(`${ApiUrl}/api/get-token`,{'mobile':loginData.mobile,'token':token}).then((res:any)=>{
             if(res.data.status===true){
               console.log(res.data);
             }else{

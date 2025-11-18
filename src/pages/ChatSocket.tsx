@@ -1,41 +1,47 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useParams } from "react-router";
-import Menu from "../components/Menu";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import {
     IonButton,
     IonButtons,
+    IonCol,
     IonContent,
     IonFooter,
+    IonHeader,
     IonIcon,
     IonImg,
     IonLabel,
-    IonPage,
+    IonModal, IonNote, IonRow, IonTitle,
+    IonToolbar
 } from "@ionic/react";
-import Header from "../components/Header";
 
 import "../theme/chatpage.css";
 import {
+    callOutline,
+    chevronBackOutline,
     closeCircle,
-    images,
-    playCircle,
-    sendSharp,
+    images, imagesOutline, paperPlaneOutline, playCircle, sendSharp,
+    videocamOutline
 } from "ionicons/icons";
 import { useSelector } from "react-redux";
-import axios from "axios";
-import { urls } from "../components/GlobalVars";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
+import WebSocketContext from "../contextapi/WebSocketContext";
+import axios from "axios";
+import { ApiUrl } from "../components/GlobalVars";
 
-const ChatSocket: React.FC = () => {
-    const user = useSelector((state: any) => state.user.user);
-    const socket = useSelector((state: any) => state.websocket.websocket);
-    const contacts = useSelector((state: any) => state.contacts.contacts);
+interface ContactProps{
+    contact: any;
+    closeChat: (value:any)=>void;
+    newMsg:any;
+}
+
+const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
+    const self = useSelector((state: any) => state.auth.user);
+    const socket = useContext(WebSocketContext);
     const popInfo = useRef(null);
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [popText, setPopText] = useState("");
     const [name, setName] = useState("");
     const [previews, setPreviews] = useState<any>([]);
 
-    const params: any = useParams();
 
     //to set chats array
     const [chats, setChats] = useState<any[]>([]);
@@ -53,64 +59,44 @@ const ChatSocket: React.FC = () => {
     }
     
     useEffect(() => {
-        contacts.forEach((element: any) => {
-            if (element.mobile === params.mobile) {
-                setName(element.first_name + " " + element.last_name);
+        if(contact){
+            // send a ping message to check for online status of the user
+            if (socket?.readyState === WebSocket.OPEN) {
+                const data = {receiver:contact?.mobile,sender:self.mobile,check:'ping'};
+                socket.send(JSON.stringify(data));
+            } else if (socket?.readyState === WebSocket.CLOSED) {
+                notify("Not Connected");
             }
-        });
-
-        if (params) {
-            axios.post(`${urls.ApiUrl}/api/get-messages`, {
-                sender: user.mobile,
-                receiver: params.mobile,
-            }).then((res) => {
-                setChats(res.data.messages);
-            }).catch((e) => {
-                console.log(e);
-            });
+            axios.post(`${ApiUrl}/api/get-messages`,{sender:self.mobile,receiver:contact?.mobile}).then((res)=>{
+                setChats([...chats,...res.data.messages]);
+            }).catch((err)=>{console.log(err.message)});
         }
+    }, [socket,contact]);
 
-        if (socket.readyState === WebSocket.OPEN) {
-            const data = {receiver:params.mobile,sender:user.mobile,check:'ping'};
-            socket.send(JSON.stringify(data));
-        } else if (socket.readyState === WebSocket.CLOSED) {
-            notify("Not Connected");
+    useEffect(() => {
+        if(newMsg && newMsg.sender==contact?.mobile){
+            setChats([newMsg, ...chats]);
         }
-    }, [socket]);
+    },[newMsg]);
+    
 
-    socket.onmessage = (data: any) => {
-        var message = JSON.parse(data.data);
-        if(message.ping===true){
-            setStatus('Online');
-        }else if(message.ping===false){
-            setStatus(null);
-        }else{
-            if (message.sender === params.mobile) {
-                const newchat = [message, ...chats];
-                setChats(newchat);
-                setStatus('Online');
-            }
-        }
-    };
-
-
-    //on send by the user the chat is pushed to the chat array and saved to the localstorage
+    //on send by the self the chat is pushed to the chat array and saved to the localstorage
     const sendMsg = () => {
+        if(!text){return;}
         var time = new Date();
         var meridian = time.getHours() > 11 ? " PM" : " AM";
         const data: any = {
             sent: time.getHours() + ":" + time.getMinutes() + meridian,
-            sender: user.mobile,
-            receiver: params.mobile,
-            name: user.first_name + " " + user.last_name,
+            sender: self.mobile,
+            receiver: contact.mobile,
+            name: self.name,
             msg: text,
             status: "sent",
             read: false,
         };
 
-        if (socket.readyState === WebSocket.OPEN) {
+        if ( socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(data));
-            setText("");
             setChats([data, ...chats]);
             setText("");
         } else if (socket.readyState === WebSocket.CLOSED) {
@@ -123,9 +109,9 @@ const ChatSocket: React.FC = () => {
         var meridian = time.getHours() > 11 ? " PM" : " AM";
         const data: any = {
             sent: time.getHours() + ":" + time.getMinutes() + meridian,
-            sender: user.mobile,
-            receiver: params.mobile,
-            name: user.first_name + " " + user.last_name,
+            sender: self.mobile,
+            receiver: contact.mobile,
+            name: self.first_name + " " + self.last_name,
         };
 
         if(previews.length){
@@ -183,85 +169,97 @@ const ChatSocket: React.FC = () => {
             });
     };
 
+    const clearPage = ()=>{
+        closeChat(null);
+        setChats([]);
+    }
+
     return (
-        <>
-            <Menu />
-            <IonPage id="main-content">
-                <Header title={name} status={status} />
-                <IonContent>
-                    {popoverOpen ? (
-                        <div ref={popInfo} className="status">
-                            {popText}
+        <IonModal isOpen={contact!==null} onDidDismiss={()=>clearPage()}>
+            <IonHeader>
+                <IonToolbar>
+                    <IonRow slot="start">
+                        <IonCol size="4">
+                            <IonButton fill="clear" onClick={()=>clearPage()}><IonIcon icon={chevronBackOutline}/></IonButton>
+                        </IonCol>
+                        <IonLabel>
+                            <IonTitle className="ion-no-padding">{contact?.first_name}
+                                <br /><IonNote>{contact?.mobile}</IonNote>
+                            </IonTitle>
+                        </IonLabel>
+                    </IonRow>
+                    <IonButtons slot="end">
+                        <IonButton onClick={()=>{}}><IonIcon icon={videocamOutline}></IonIcon></IonButton>
+                        <IonButton onClick={()=>{}}><IonIcon icon={callOutline}></IonIcon></IonButton>
+                    </IonButtons>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent>
+                {popoverOpen ? (
+                    <div ref={popInfo} className="status">
+                        {popText}
+                    </div>
+                ) : null}
+                <div id="chat-container">
+                    <div id="chat-section">
+                        {Array.isArray(chats)
+                            ? chats.map((msg: any, key: any) => {
+                                return (
+                                    <div key={key} className={contact?.mobile == msg.sender? "received message": "sent message"}>
+                                        {msg.file ? 
+                                            msg.filetype==='image'?
+                                                (<IonImg src={msg.file} onError={(e) => {console.log("img");}} alt=""></IonImg>)
+                                            : msg.filetype==='video'?
+                                                (<>
+                                                <video src={msg.file}></video>
+                                                <IonIcon icon={playCircle} size="small" color="white"></IonIcon>
+                                                </>)
+                                            : null
+                                        : null}
+                                        <span>{msg.msg}</span><br />
+                                        <span className="time">{msg.sent}</span>
+                                    </div>
+                                );
+                            })
+                            : null}
+                    </div>
+                </div>
+            </IonContent>
+            <IonToolbar slot="bottom">
+                <div style={{ position: "relative" }}>
+                    {Array.isArray(previews) && previews.length > 0 ? (
+                        <div id="image-select-slider">
+                            {previews.map((file: any, index: any) => {
+                                if (file.type === "image") {
+                                    return <IonImg src={file.blob} key={index} alt=""></IonImg>;
+                                } else {
+                                    return <video src={file.blob} key={index}></video>;
+                                }
+                            })}
+                            <IonIcon icon={closeCircle} onClick={()=>setPreviews([])}></IonIcon>
                         </div>
                     ) : null}
-                    <div id="chat-container">
-                        <div id="chat-section">
-                            {Array.isArray(chats)
-                                ? chats.map((msg: any, key: any) => {
-                                    return (
-                                        <div key={key} className={params.mobile == msg.sender? "received message": "sent message"}>
-                                            {msg.file ? 
-                                                msg.filetype==='image'?
-                                                    (<IonImg src={msg.file} onError={(e) => {console.log("img");}} alt=""></IonImg>)
-                                                : msg.filetype==='video'?
-                                                    (<>
-                                                    <video src={msg.file}></video>
-                                                    <IonIcon icon={playCircle} size="small" color="white"></IonIcon>
-                                                    </>)
-                                                : null
-                                            : null}
-                                            <span>{msg.msg}</span><br />
-                                            <span className="time">{msg.sent}</span>
-                                        </div>
-                                    );
-                                })
-                                : null}
-                        </div>
-                    </div>
-                </IonContent>
-                <IonFooter>
-                    <div style={{ position: "relative" }}>
-                        {Array.isArray(previews) && previews.length > 0 ? (
-                            <div id="image-select-slider">
-                                {previews.map((file: any, index: any) => {
-                                    if (file.type === "image") {
-                                        return <IonImg src={file.blob} key={index} alt=""></IonImg>;
-                                    } else {
-                                        return <video src={file.blob} key={index}></video>;
-                                    }
-                                })}
-                                <IonIcon icon={closeCircle} onClick={()=>setPreviews([])}></IonIcon>
-                            </div>
-                        ) : null}
-                        <IonLabel id="chat-actions">
-                            <input
-                                type="text"
-                                name="message"
-                                id="message"
-                                value={text}
-                                onChange={(e: any) => setText(e.target.value)}
-                                placeholder="Message.."
-                            />
-                            {/* <IonTextarea id="message" 
-              autoGrow={true} 
-              autoCapitalize={'sentence'}
-              rows={1}
-              value={text}
-              onChange={(e: any) => setText(e.target.value)} 
-              placeholder="Message.."></IonTextarea> */}
-                            <IonButtons>
-                                <IonButton onClick={() => fileSelect()}>
-                                    <IonIcon color="white" icon={images}></IonIcon>
-                                </IonButton>
-                                <IonButton onClick={() => {previews.length ? sendMedia() : sendMsg();}}>
-                                    <IonIcon color="white" icon={sendSharp}></IonIcon>
-                                </IonButton>
-                            </IonButtons>
-                        </IonLabel>
-                    </div>
-                </IonFooter>
-            </IonPage>
-        </>
+                    <IonLabel id="chat-actions">
+                        <input
+                            type="text"
+                            name="message"
+                            id="message"
+                            value={text}
+                            onChange={(e: any) => setText(e.target.value)}
+                            placeholder="Message.."
+                        />
+                        <IonButtons className="">
+                            <IonButton onClick={() => fileSelect()}>
+                                <IonIcon color="white" icon={imagesOutline}></IonIcon>
+                            </IonButton>
+                            <IonButton onClick={() => {previews.length ? sendMedia() : sendMsg();}}>
+                                <IonIcon color="white" icon={paperPlaneOutline}></IonIcon>
+                            </IonButton>
+                        </IonButtons>
+                    </IonLabel>
+                </div>
+            </IonToolbar>
+        </IonModal>
     );
 };
 
