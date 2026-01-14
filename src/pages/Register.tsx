@@ -93,8 +93,6 @@ const Register: React.FC = () => {
     }
   }, []);
   return (
-    <>
-      <Menu />
       <IonPage id="main-content">
         <Header title="Sign up" status={null}/>
         <IonContent fullscreen>
@@ -112,7 +110,6 @@ const Register: React.FC = () => {
           </div>
         </IonContent>
       </IonPage>
-    </>
   );
 };
 

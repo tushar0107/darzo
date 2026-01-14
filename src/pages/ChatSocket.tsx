@@ -62,20 +62,20 @@ const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
         if(contact){
             // send a ping message to check for online status of the user
             if (socket?.readyState === WebSocket.OPEN) {
-                const data = {receiver:contact?.mobile,sender:self.mobile,check:'ping'};
+                const data = {receiver:contact?.mobile,sender:self.mobile,type:'ping'};
                 socket.send(JSON.stringify(data));
             } else if (socket?.readyState === WebSocket.CLOSED) {
                 notify("Not Connected");
             }
             axios.post(`${ApiUrl}/api/get-messages`,{sender:self.mobile,receiver:contact?.mobile}).then((res)=>{
-                setChats([...chats,...res.data.messages]);
+                setChats([...res.data.messages,...chats]);
             }).catch((err)=>{console.log(err.message)});
         }
     }, [socket,contact]);
 
     useEffect(() => {
         if(newMsg && newMsg.sender==contact?.mobile){
-            setChats([newMsg, ...chats]);
+            setChats([...chats,newMsg]);
         }
     },[newMsg]);
     
@@ -93,11 +93,12 @@ const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
             msg: text,
             status: "sent",
             read: false,
+            type: "msg"
         };
 
         if ( socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify(data));
-            setChats([data, ...chats]);
+            setChats([...chats,data]);
             setText("");
         } else if (socket.readyState === WebSocket.CLOSED) {
             notify("Offline");
@@ -112,6 +113,7 @@ const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
             sender: self.mobile,
             receiver: contact.mobile,
             name: self.first_name + " " + self.last_name,
+            type: "file"
         };
 
         if(previews.length){
@@ -225,7 +227,7 @@ const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
                     </div>
                 </div>
             </IonContent>
-            <IonToolbar slot="bottom">
+            <IonFooter>
                 <div style={{ position: "relative" }}>
                     {Array.isArray(previews) && previews.length > 0 ? (
                         <div id="image-select-slider">
@@ -258,7 +260,7 @@ const ChatSocket: React.FC<ContactProps> = ({contact,closeChat,newMsg}) => {
                         </IonButtons>
                     </IonLabel>
                 </div>
-            </IonToolbar>
+            </IonFooter>
         </IonModal>
     );
 };

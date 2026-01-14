@@ -1,12 +1,11 @@
-import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonTitle, useIonLoading, } from "@ionic/react";
+import { IonHeader, IonToolbar, IonButtons, IonButton, IonIcon, IonTitle, useIonLoading, IonBackButton, } from "@ionic/react";
 import React from "react";
-import { logOutOutline, personOutline, reload } from "ionicons/icons";
+import { arrowBack, logOutOutline, personOutline, reload } from "ionicons/icons";
 import { useDispatch, useSelector } from "react-redux";
 import { ApiUrl } from "./GlobalVars";
 import axios from "axios";
 import { storeContacts } from "../redux/user/contactSlice";
-import { clearUserData } from "../redux/user/userSlice";
-import { logout } from "../redux/user/authSclice";
+import { clearUserData, logout } from "../redux/user/authSclice";
 
 interface UserProps{
   title: string;
@@ -36,9 +35,11 @@ const Header: React.FC<UserProps> = (props:any) => {
   }
 
   return (
-    <>
       <IonHeader>
         <IonToolbar>
+          <IonButtons slot="start">
+              <IonBackButton defaultHref="/" icon={arrowBack}/>
+          </IonButtons>
           <IonButtons slot="end">
             {loginStatus?
             <>
@@ -60,7 +61,6 @@ const Header: React.FC<UserProps> = (props:any) => {
         <IonTitle>{props.title}{props.status?<span style={{display:'inline-block',width:'10px',height:'10px',marginInlineStart:'5px',backgroundColor:'#00ff00',borderRadius:'20px',}}></span>:null}</IonTitle>
         </IonToolbar>
       </IonHeader>
-    </>
   );
 };
 

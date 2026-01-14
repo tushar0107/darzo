@@ -16,13 +16,8 @@ const userSlice = createSlice({
     storeUserData(state, action: PayloadAction<any>) {
         state.user = action.payload;
     },
-    clearUserData(state) {
-      state.user = null;
-      localStorage.removeItem('user');
-      window.location.reload();
-    },
   },
 });
 
-export const { storeUserData, clearUserData } = userSlice.actions;
+export const { storeUserData } = userSlice.actions;
 export default userSlice.reducer;

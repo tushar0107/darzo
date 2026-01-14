@@ -1,6 +1,6 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-android/
+/android
 # dependencies
 /node_modules
 /.pnp
@@ -30,3 +30,4 @@ yarn-error.log*
 .eslintcache
 
 .env
+.cert/

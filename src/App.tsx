@@ -1,5 +1,5 @@
 import { Redirect, Route, useHistory } from "react-router-dom";
-import { IonApp, IonButton, IonFooter, IonIcon, IonRouterOutlet, IonSplitPane, IonTabBar, IonTabButton, IonTabs, IonToast, setupIonicReact, useIonAlert, useIonLoading, useIonToast } from "@ionic/react";
+import { IonApp, IonIcon, IonRouterOutlet, IonSplitPane, IonTabBar, IonTabButton, IonTabs, IonToast, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 
 /* Core CSS required for Ionic components to work properly */
@@ -21,22 +21,20 @@ import { App as CapApp } from "@capacitor/app";
 
 /* Theme variables */
 // import "./theme/variables.css";
+import "./theme/custom.css";
 import Home from "./pages/Home";
 import Register from "./pages/Register";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import UserProfile from "./pages/UserProfile";
-import { login, storeUserData } from "./redux/user/authSclice";
-import { PushNotifications } from "@capacitor/push-notifications";
+import { storeUserData } from "./redux/user/authSclice";
 import { FilePicker } from "@capawesome/capacitor-file-picker";
-import { ApiUrl, headers, WebSocketUrl } from "./components/GlobalVars";
+import { WebSocketUrl } from "./components/GlobalVars";
 import { callOutline, chatbubbleEllipsesOutline, personOutline, settingsOutline } from "ionicons/icons";
 import WebSocketContext from "./contextapi/WebSocketContext";
 import Menu from "./components/Menu";
 import { Calls } from "./pages/Calls";
-import { CustomFooter } from "./components/CustomFooter";
-import axios from "axios";
-import { setWebSocket } from "./redux/user/websocketSlice";
+import { Login } from "./pages/Login";
 
 setupIonicReact();
 
@@ -45,9 +43,6 @@ const App: React.FC = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const { isAuthenticated, user } = useSelector((state: any) => state.auth);
 	const [socket, setSocket] = useState<any>(null);
-	const [present,dismiss] = useIonLoading();
-	const [presentAlert] = useIonAlert();
-	const [presentToast] = useIonToast();
 
 	const history = useHistory();
 
@@ -59,22 +54,6 @@ const App: React.FC = () => {
 	}
 
 	const dispatch = useDispatch();
-
-	const [mobile, setMobile] = useState<any>("");
-	const [password, setPassword] = useState('');
-
-	const token = localStorage.getItem('notificationToken');
-
-	document.addEventListener("ionBackButton", (ev: any) => {
-		ev.detail.register(1, () => {
-			if (window.location.pathname === "/home") {
-				CapApp.exitApp();
-			}
-			else {
-				history.goBack();
-			}
-		});
-	});
 
 
 	const checkPermissions = async () => {
@@ -95,11 +74,9 @@ const App: React.FC = () => {
 		}
 	};
 
-
-
 	useEffect(() => {
 		const userData: any = localStorage.getItem("user");
-		if (userData) {
+		if (userData !== null) {
 			const user = JSON.parse(userData);
 			dispatch(storeUserData(user));
 			var ws: any = new WebSocket(`${WebSocketUrl}/${user.mobile}`);
@@ -109,55 +86,19 @@ const App: React.FC = () => {
 		}
 		checkPermissions();
 		requestPermissions();
-
+		
+		CapApp.addListener("backButton", ({canGoBack}) => {
+			if (!canGoBack || history.location.pathname === '/home' || history.location.pathname === '' || history.location.pathname === '/') {
+				if (window.location.pathname === "/home" || window.location.pathname === "/") {
+					CapApp.exitApp();
+				}else {
+					history.goBack();
+				}
+			}
+		});
 	}, [isAuthenticated]);
 
-	const handleLogin = () => {
-		if (mobile && password) {
-			// dispatch(login());
-			// dispatch(storeUserData({ mobile: parseInt(mobile) }));
-			axios.post(`${ApiUrl}/api/chat-login`, { mobile: mobile, password: password }, { headers: headers }).then((res) => {
-				if (res.data.user) {
-					dispatch(login());
-					dispatch(storeUserData(res.data.user));
-					var ws = new WebSocket(`${WebSocketUrl}/${res.data.user.mobile}`);
-					setSocket(ws);
-					dismiss();
-					presentAlert({
-						header: "Login",
-						message: "Hello " + res.data.user.first_name + "!",
-						buttons: ["Hi!"],
-					});
-				} else {
-					dismiss();
-					presentAlert({
-						header: "Login error!",
-						message: res.data.message,
-						buttons: ["OK"],
-					});
-				}
-			}).then(() => {
-				if (token) {
-					axios.post(`${ApiUrl}/api/get-token`, { 'mobile': mobile, 'token': token }).then((res: any) => {
-						if (res.data.status === true) {
-						} else {
-						}
-					}).catch(e => console.log(e));
-				}
-			})
-			.catch((err) => {
-				dismiss();
-				presentAlert({
-					header: "Error!!",
-					message: "Server error",
-					buttons: ["OK"],
-				});
-				console.error(err);
-			});
-		}else{
-			presentToast({message:'Please fill mobile and password',duration:2000});
-		}
-	};
+	
 	if (isAuthenticated) {
 		return (
 			<WebSocketContext.Provider value={socket}>
@@ -167,6 +108,9 @@ const App: React.FC = () => {
 							<Menu />
 							<IonTabs>
 								<IonRouterOutlet id="main-content">
+									<Route exact path="*">
+										<Redirect to="/home" />
+									</Route>
 									<Route exact path="/">
 										<Redirect from="/" to="/home" />
 									</Route>
@@ -181,6 +125,9 @@ const App: React.FC = () => {
 									</Route>
 									<Route exact path="/profile">
 										<UserProfile />
+									</Route>
+									<Route exact path="/login">
+										<Login />
 									</Route>
 								</IonRouterOutlet>
 								<IonTabBar slot="bottom">
@@ -216,17 +163,22 @@ const App: React.FC = () => {
 	} else {
 		return (
 			<IonApp>
-				<div id="login-form">
-					<h1>Login</h1>
-					<input type="number" onChange={(e) => setMobile(e.target.value)} name="mobile" id="mobile" value={mobile} placeholder="Enter mobile"></input>
-					<input type="password" onChange={(e) => setPassword(e.target.value)} name='password' id='password' value={password} placeholder="Password"></input>
-					<IonButton onClick={handleLogin} color="primary">
-						<strong>Sign in</strong>
-					</IonButton>
-					<IonButton onClick={() => history.push('/register')} color="primary">
-						<strong>Register</strong>
-					</IonButton>
-				</div>
+				<IonReactRouter>
+					<IonRouterOutlet id="main-content">
+						<Route exact path="*">
+							<Redirect to={"/login"}/>
+						</Route>
+						<Route exact path="/login">
+							<Login />
+						</Route>
+						<Route exact path="/">
+							<Login />
+						</Route>
+						<Route exact path="/register">
+							<Register />
+						</Route>
+					</IonRouterOutlet>
+				</IonReactRouter>
 			</IonApp>
 		);
 	}

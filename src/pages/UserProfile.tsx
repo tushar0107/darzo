@@ -1,13 +1,12 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { storeUserData, clearUserData } from "../redux/user/userSlice";
+import React from "react";
+import { useSelector } from "react-redux";
 
 import { IonPage, IonContent } from "@ionic/react";
 import Header from "../components/Header";
 import Menu from "../components/Menu";
 
 const UserProfile: React.FC = () => {
-  const user = useSelector((state: any) => state.user.user);
+  const user = useSelector((state: any) => state.auth.user);
   const loginStatus = useSelector((state:any)=>state.auth.isAuthenticated);
 
 

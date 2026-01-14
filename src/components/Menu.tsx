@@ -11,8 +11,8 @@ import {
   IonLabel,
 } from "@ionic/react";
 import { cardOutline, logOutOutline } from "ionicons/icons";
-import { clearUserData } from "../redux/user/userSlice";
 import { useHistory } from "react-router";
+import { clearUserData } from "../redux/user/authSclice";
 
 const Menu: React.FC = () => {
   const history = useHistory();
@@ -34,7 +34,6 @@ const Menu: React.FC = () => {
             routerDirection="back"
             onClick={() => {
               clearUserData();
-              localStorage.removeItem("user");
               history.push("/");
               window.location.reload();
             }}
